@@ -43,6 +43,12 @@
 - [ ] Distribute points for kills and/or time survived
 - [ ] Score is synchronized and displayed correctly
 - [ ] history/listing of High Scores is maintained server-side via PHP & SQL
+
+### 7. Bonus features
+- [ ] Scrolling background
+  - [ ] With parallax effect
+- [ ] TBD/cont.
+
 ***
 
 ## Description
@@ -73,3 +79,8 @@ placeholder
 
 ## Known Issues
 placeholder
+
+***
+
+## Asset Sources
+- [Backdrop_Galaxy_01](https://pixabay.com/illustrations/universe-space-galaxy-wormhole-7140671/)
