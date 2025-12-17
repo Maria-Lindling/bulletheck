@@ -2,6 +2,7 @@ using UnityEngine;
 using FishNet.Object;
 using UnityEngine.Events;
 using System;
+using static UnityEngine.InputSystem.InputAction;
 
 public class GameEventSystem : NetworkBehaviour
 {
@@ -14,6 +15,7 @@ public class GameEventSystem : NetworkBehaviour
   public static UnityEvent<GameEventContext> ScorePoint { get; private set ; }
   public static UnityEvent<GameEventContext> PlayerRegister { get; private set ; }
   public static UnityEvent<GameEventContext> SpawnBullet { get; private set ; }
+  public static UnityEvent<GameEventContext> PauseMenu { get; private set ; }
 
   private void Start()
   {
@@ -23,5 +25,6 @@ public class GameEventSystem : NetworkBehaviour
     ScorePoint = playerEvents.scorePoint ;
     PlayerRegister = playerEvents.playerRegister ;
     SpawnBullet = playerEvents.spawnBullet ;
+    PauseMenu = metaEvents.pauseMenu ;
   }
 }

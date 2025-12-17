@@ -4,6 +4,7 @@ using FishNet.Object.Synchronizing;
 using UnityEngine.InputSystem;
 using System.Collections;
 using static UnityEngine.InputSystem.InputAction;
+using UnityEngine.SocialPlatforms.Impl;
 
 [RequireComponent(typeof(LogDriver))]
 [RequireComponent(typeof(PlayerInput))]
@@ -28,7 +29,7 @@ public class PlayerController : NetworkBehaviour
 
 #region Properties
   public bool IsReady => isReady.Value ;
-  public int PlayerNumber => transform.position.x < 0 ? 0 : 1 ;
+  public PlayerSelect Identity { get ; private set ; }
 #endregion
 
 
@@ -46,6 +47,19 @@ public class PlayerController : NetworkBehaviour
 
 
 #region OwnerExclusive
+  /// <summary>
+  /// <para>Action taken on primary attack input. (Keyboard default: mouse-1)</para>
+  /// <para>Implicitly Owner-exclusive.</para>
+  /// </summary>
+  /// <param name="ctx"></param>
+  public void OnPrimaryAttack(CallbackContext ctx)
+  {
+    if( !ctx.performed )
+      return ;
+    
+    Test_PrimaryAttack() ;
+  }
+
   /// <summary>
   /// <para>Action taken on movement input. (Keyboard default: WASD)</para>
   /// <para>Implicitly Owner-exclusive.</para>
@@ -68,14 +82,39 @@ public class PlayerController : NetworkBehaviour
 
     ChangeColor( Random.ColorHSV() ) ;
   }
+
+  /// <summary>
+  /// <para>Action taken on pause menu input. (Keyboard default: escape)</para>
+  /// <para>Implicitly Owner-exclusive.</para>
+  /// </summary>
+  /// <param name="ctx"></param>
+  public void OnPauseMenu(CallbackContext ctx)
+  {
+    if( !ctx.performed )
+      return ;
+    
+    PauseMenu() ;
+  }
 #endregion
 
 
 #region ServerRpc
   [ServerRpc]
+  private void Test_PrimaryAttack()
+  {
+    GameEventSystem.ScorePoint.Invoke( new GameEventContext( gameObject, Random.Range(100,10000000), "#### #### 0000" ) ) ;
+  }
+
+  [ServerRpc]
   private void Move(Vector2 value)
   {
     _currentMovement = moveSpeed * Time.deltaTime * value.normalized ;
+  }
+  
+  [ServerRpc]
+  private void PauseMenu()
+  {
+    GameEventSystem.PauseMenu.Invoke( new GameEventContext( gameObject ) ) ;
   }
 
   [ServerRpc]
@@ -146,18 +185,22 @@ public class PlayerController : NetworkBehaviour
     logDriver       = GetComponent<LogDriver>() ;
     playerInput.enabled = false ;
     logDriver.enabled   = false ;
+
+    Identity = transform.position.x < 0 ? PlayerSelect.Player1 : PlayerSelect.Player2 ;
     
     yield return null ;
     if( IsOwner )
     {
-      switch( PlayerNumber )
+      switch( Identity )
       {
-        case 0 :
+        case PlayerSelect.Player1 :
           ChangeColor( Color.red ) ;
           break ;
-        case 1 :
+
+        case PlayerSelect.Player2 :
           ChangeColor( Color.blue ) ;
           break ;
+
         default:
           ChangeColor( Random.ColorHSV() ) ;
           break ;

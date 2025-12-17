@@ -18,6 +18,7 @@ public class GameEventContext
   private bool _evtValueBool ;
   private Vector2 _evtValueVector2 ;
   private Vector3 _evtValueVector3 ;
+  private PlayerSelect _evtValuePlayerSelect ;
 #endregion
 
 
@@ -73,9 +74,13 @@ public class GameEventContext
         _evtValueVector3 = v ;
         // Debug.Log($"AddValue<Vector3>({v})") ;
         break ;
+
+      case PlayerSelect v:
+        _evtValuePlayerSelect = v ;
+        break ;
       
       default :
-        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)} and {typeof(Vector3)}") ;
+        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)} and {typeof(PlayerSelect)}") ;
     }
     return this ;
   }
@@ -117,9 +122,14 @@ public class GameEventContext
         value = (T)Convert.ChangeType(_evtValueVector3, typeof(T)) ;
         // Debug.Log($"ReadValue<Vector3> == {value}") ;
         break ;
+
+      case Type t when t == typeof(PlayerSelect) :
+        value = (T)Convert.ChangeType(_evtValuePlayerSelect, typeof(T)) ;
+        // Debug.Log($"ReadValue<Vector3> == {value}") ;
+        break ;
       
       default:
-        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)} and {typeof(Vector3)}") ;
+        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)} and {typeof(PlayerSelect)}") ;
     }
     return value ;
   }
@@ -218,6 +228,11 @@ public class GameEventContext
   {
     _isSealed = status ;
     Source = source ;
+
+    if( _evtValuePlayerSelect == PlayerSelect.None && Source.TryGetComponent(out PlayerController player) )
+    {
+      _evtValuePlayerSelect = player.Identity ;
+    }
   }
 #endregion
 }
