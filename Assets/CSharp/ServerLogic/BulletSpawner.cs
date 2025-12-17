@@ -4,21 +4,21 @@ using System.Collections;
 
 public class BulletSpawner : NetworkBehaviour
 {
-  [SerializeField] private GameObject ballPrefab ;
+  [SerializeField] private GameObject bulletPrefab ;
 
-  public void OnSpawnBall(GameEventContext ctx)
+  public void OnSpawnBullet(GameEventContext ctx)
   {
-    StartCoroutine( SpawnBall( ctx.ReadValue<float>() ) ) ;
+    StartCoroutine( SpawnBullet( ctx.ReadValue<float>() ) ) ;
   }
 
   [Server]
-  public IEnumerator SpawnBall(float delay)
+  public IEnumerator SpawnBullet(float delay)
   {
     yield return new WaitForSeconds(delay) ;
     // if( WorldManager.CurrentState == GameState.Playing )
     // {
-    //   GameObject ballInstance = Instantiate(ballPrefab) ;
-    //   Spawn(ballInstance) ;
+    //   GameObject bulletInstance = Instantiate(bulletPrefab) ;
+    //   Spawn(bulletInstance) ;
     // }
   }
 

@@ -22,10 +22,10 @@ public class BulletController : NetworkBehaviour
     switch( other.tag )
     {
       case "LeftGoal":
-        GameEventSystem.OnScorePoint.Invoke( new GameEventContext(gameObject,1) ) ;
+        GameEventSystem.ScorePoint.Invoke( new GameEventContext(gameObject,1) ) ;
         break ;
       case "RightGoal":
-        GameEventSystem.OnScorePoint.Invoke( new GameEventContext(gameObject,0) ) ;
+        GameEventSystem.ScorePoint.Invoke( new GameEventContext(gameObject,0) ) ;
         break ;
       default:
         return ;

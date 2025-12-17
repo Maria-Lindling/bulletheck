@@ -3,7 +3,13 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine.InputSystem;
 using System.Collections;
+using static UnityEngine.InputSystem.InputAction;
 
+[RequireComponent(typeof(LogDriver))]
+[RequireComponent(typeof(PlayerInput))]
+
+// [RequireComponent(typeof(PlayerInput))]
+// [RequireComponent(typeof(LogDriver))]
 public class PlayerController : NetworkBehaviour
 {
 #region SyncVar
@@ -14,6 +20,9 @@ public class PlayerController : NetworkBehaviour
 
 #region Fields
   private Renderer playerRenderer ;
+  private LogDriver logDriver ;
+  private PlayerInput playerInput ;
+  private Vector2 _currentMovement ;
 #endregion
 
 
@@ -25,70 +34,58 @@ public class PlayerController : NetworkBehaviour
 
 #region Unity Editor
   [SerializeField] private float moveSpeed = 5.0f ;
-  [SerializeField] private float minY = -4.0f ;
-  [SerializeField] private float maxY = 4.0f ;
-
-  [Header("Input System")]
-  [SerializeField] private InputAction moveAction ;
-  [SerializeField] private InputAction colorChangeAction ;
+  [SerializeField] private float minX = -8.75f ;
+  [SerializeField] private float maxX = 8.75f ;
+  [SerializeField] private float minY = -4.5f ;
+  [SerializeField] private float maxY = 4.75f ;
 #endregion
 
 
-#region OnTick
-  private void OnTick()
-  {
-    if( !IsOwner )
-      return ;
-    
-    if( isReady.Value )
-    {
-      HandleMoveInput() ;
-    }
-    else
-    {
-      CheckForChangeColor() ;
-    }
-  }
+#region ServerExclusive
 #endregion
 
 
-#region ReadyStateHandling
-  [ServerRpc]
-  public void SetReadyStateServerRpc(string name)
+#region OwnerExclusive
+  /// <summary>
+  /// <para>Action taken on movement input. (Keyboard default: WASD)</para>
+  /// <para>Implicitly Owner-exclusive.</para>
+  /// </summary>
+  /// <param name="ctx">Contains movement direction as Vector2.</param>
+  public void OnMove(CallbackContext ctx)
   {
-    // Debug.Log($"SetPlayerReady: {name}") ;
-    isReady.Value = !isReady.Value ;
-
-    GameEventSystem.OnPlayerRegister.Invoke( new GameEventContext(gameObject, transform.position.x < 0 ? 0 : 1, name) ) ;
-  }
-#endregion
-
-
-#region Movement
-  private void HandleMoveInput()
-  {
-    float input = moveAction.ReadValue<float>() ;
-    if( input != 0.0f )
-      Move(input) ;
+    Move( ctx.ReadValue<Vector2>() ) ;
   }
 
-  [ServerRpc]
-  private void Move(float value)
+  /// <summary>
+  /// <para>Action taken on interact input. (Keyboard default: spacebar)</para>
+  /// <para>Implicitly Owner-exclusive.</para>
+  /// </summary>
+  /// <param name="ctx"></param>
+  public void OnInteract(CallbackContext ctx)
   {
-    float newY = transform.position.y + value * moveSpeed * Time.deltaTime ;
-    newY = Mathf.Clamp( newY, minY, maxY ) ;
-    transform.position = new Vector3( transform.position.x, newY, transform.position.z ) ;
-  }
-#endregion
-
-
-#region Color
-  private void CheckForChangeColor()
-  {
-    if( !colorChangeAction.triggered )
+    if( !ctx.performed )
       return ;
 
     ChangeColor( Random.ColorHSV() ) ;
+  }
+#endregion
+
+
+#region ServerRpc
+  [ServerRpc]
+  private void Move(Vector2 value)
+  {
+    _currentMovement = moveSpeed * Time.deltaTime * value.normalized ;
+  }
+
+  [ServerRpc]
+  private void UpdatePosition()
+  {
+    transform.position = new Vector3(
+      Mathf.Clamp( transform.position.x + _currentMovement.x, minX, maxX ),
+      Mathf.Clamp( transform.position.y + _currentMovement.y, minY, maxY ),
+      0
+    ) ;
   }
 
   [ServerRpc]
@@ -103,6 +100,18 @@ public class PlayerController : NetworkBehaviour
     playerColor.Value = value ;
   }
 
+  [ServerRpc]
+  public void SetReadyStateServerRpc(string name)
+  {
+    // Debug.Log($"SetPlayerReady: {name}") ;
+    isReady.Value = !isReady.Value ;
+
+    GameEventSystem.PlayerRegister.Invoke( new GameEventContext(gameObject, transform.position.x < 0 ? 0 : 1, name) ) ;
+  }
+#endregion
+
+
+#region SyncEvents
   private void OnColorChanged(Color prev, Color next, bool isServer )
   {
     playerRenderer.material.color = next ;
@@ -116,8 +125,8 @@ public class PlayerController : NetworkBehaviour
     playerColor.OnChange -= OnColorChanged ;
     if( IsOwner )
     {
-      moveAction?.Disable() ;
-      colorChangeAction?.Disable() ;
+      playerInput.enabled = false ;
+      logDriver.enabled   = false ;
       if( TimeManager != null )
       {
         TimeManager.OnTick -= OnTick ;
@@ -128,9 +137,16 @@ public class PlayerController : NetworkBehaviour
   private IEnumerator DelayedIsOwner()
   {
     playerColor.OnChange += OnColorChanged ;
-    playerRenderer = GetComponentInChildren<Renderer>() ;
+
+    playerRenderer  = GetComponentInChildren<Renderer>() ;
     playerRenderer.material = new Material(playerRenderer.material) ;
     playerRenderer.material.color = playerColor.Value ;
+
+    playerInput     = GetComponent<PlayerInput>() ;
+    logDriver       = GetComponent<LogDriver>() ;
+    playerInput.enabled = false ;
+    logDriver.enabled   = false ;
+    
     yield return null ;
     if( IsOwner )
     {
@@ -147,14 +163,29 @@ public class PlayerController : NetworkBehaviour
           break ;
       }
 
-      moveAction?.Enable() ;
-      colorChangeAction?.Enable() ;
+      playerInput.enabled = true ;
+      logDriver.enabled   = true ;
 
       if( TimeManager != null )
       {
         TimeManager.OnTick += OnTick ;
       }
     }
+    else if( IsServerInitialized )
+    {
+      logDriver.enabled = true ;
+    }
+  }
+#endregion
+
+
+#region OnTick
+  private void OnTick()
+  {
+    if( !IsOwner )
+      return ;
+
+    UpdatePosition() ;
   }
 #endregion
 
