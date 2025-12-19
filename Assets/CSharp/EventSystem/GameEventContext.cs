@@ -7,131 +7,118 @@ using Mono.Cecil.Cil;
 
 public class GameEventContext
 {
-#region Fields
-  GameEventContextStatus _isSealed ;
-#endregion
-
 #region Value Fields
-  private string _evtValueString ;
-  private float _evtValueFloat ;
-  private int _evtValueInt ;
-  private bool _evtValueBool ;
-  private Vector2 _evtValueVector2 ;
-  private Vector3 _evtValueVector3 ;
-  private PlayerSelect _evtValuePlayerSelect ;
+  private readonly string[] _evtValuesString ;
+  private readonly float[] _evtValuesFloat ;
+  private readonly int[] _evtValuesInt ;
+  private readonly bool[] _evtValuesBool ;
+  private readonly Vector2[] _evtValuesVector2 ;
+  private readonly Vector3[] _evtValuesVector3 ;
+  private readonly Quaternion[] _evtValuesQuaternion ;
+  private readonly PlayerSelect _evtValuePlayerSelect ;
 #endregion
 
 
 #region Properties
   public GameObject Source { get ; private set ; }
-  private bool IsSealed => _isSealed == GameEventContextStatus.Sealed ;
-#endregion
-
-
-#region Seal
-  public GameEventContext Seal()
-  {
-    _isSealed = GameEventContextStatus.Sealed ;
-    return this ;
-  }
-#endregion
-
-
-#region AddValue
-  public GameEventContext AddValue<T>(T value)
-  {
-    if( IsSealed )
-      return this ;
-    
-    switch( value )
-    {
-      case string v :
-        _evtValueString = v ;
-        // Debug.Log($"AddValue<string>({v})") ;
-        break ;
-
-      case float v :
-        _evtValueFloat = v ;
-        // Debug.Log($"AddValue<float>({v})") ;
-        break ;
-
-      case int v :
-        _evtValueInt = v ;
-        // Debug.Log($"AddValue<int>({v})") ;
-        break ;
-        
-      case bool v :
-        _evtValueBool = v ;
-        // Debug.Log($"AddValue<bool>({v})") ;
-        break ;
-        
-      case Vector2 v :
-        _evtValueVector2 = v ;
-        // Debug.Log($"AddValue<Vector2>({v})") ;
-        break ;
-        
-      case Vector3 v :
-        _evtValueVector3 = v ;
-        // Debug.Log($"AddValue<Vector3>({v})") ;
-        break ;
-
-      case PlayerSelect v:
-        _evtValuePlayerSelect = v ;
-        break ;
-      
-      default :
-        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)} and {typeof(PlayerSelect)}") ;
-    }
-    return this ;
-  }
 #endregion
 
 
 #region ReadValue
-  public T ReadValue<T>()
+  public T ReadValue<T>(int index = 0)
   {
     T value ;
     switch ( typeof(T) )
     {
       case Type t when t == typeof(string) :
-        value = (T)Convert.ChangeType(_evtValueString, typeof(T)) ;
+        value = (T)Convert.ChangeType(_evtValuesString[index], typeof(T)) ;
         // Debug.Log($"ReadValue<string> == {value}") ;
         break ;
 
       case Type t when t == typeof(float) :
-        value = (T)Convert.ChangeType(_evtValueFloat, typeof(T)) ;
+        value = (T)Convert.ChangeType(_evtValuesFloat[index], typeof(T)) ;
         // Debug.Log($"ReadValue<float> == {value}") ;
         break ;
 
       case Type t when t == typeof(int) :
-        value = (T)Convert.ChangeType(_evtValueInt, typeof(T)) ;
+        value = (T)Convert.ChangeType(_evtValuesInt[index], typeof(T)) ;
         // Debug.Log($"ReadValue<int> == {value}") ;
         break ;
 
       case Type t when t == typeof(bool) :
-        value = (T)Convert.ChangeType(_evtValueBool, typeof(T)) ;
+        value = (T)Convert.ChangeType(_evtValuesBool[index], typeof(T)) ;
         // Debug.Log($"ReadValue<bool> == {value}") ;
         break ;
 
       case Type t when t == typeof(Vector2) :
-        value = (T)Convert.ChangeType(_evtValueVector2, typeof(T)) ;
+        value = (T)Convert.ChangeType(_evtValuesVector2[index], typeof(T)) ;
         // Debug.Log($"ReadValue<Vector2> == {value}") ;
         break ;
 
       case Type t when t == typeof(Vector3) :
-        value = (T)Convert.ChangeType(_evtValueVector3, typeof(T)) ;
+        value = (T)Convert.ChangeType(_evtValuesVector3[index], typeof(T)) ;
         // Debug.Log($"ReadValue<Vector3> == {value}") ;
+        break ;
+
+      case Type t when t == typeof(Quaternion) :
+        value = (T)Convert.ChangeType(_evtValuesQuaternion[index], typeof(T)) ;
+        // Debug.Log($"ReadValue<Quaternion> == {value}") ;
         break ;
 
       case Type t when t == typeof(PlayerSelect) :
         value = (T)Convert.ChangeType(_evtValuePlayerSelect, typeof(T)) ;
-        // Debug.Log($"ReadValue<Vector3> == {value}") ;
         break ;
       
       default:
         throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)} and {typeof(PlayerSelect)}") ;
     }
     return value ;
+  }
+
+  public T[] ReadValues<T>()
+  {
+    T[] values ;
+    switch ( typeof(T) )
+    {
+      case Type t when t == typeof(string) :
+        values = (T[])Convert.ChangeType(_evtValuesString, typeof(T[])) ;
+        // Debug.Log($"ReadValue<string> == {value}") ;
+        break ;
+
+      case Type t when t == typeof(float) :
+        values = (T[])Convert.ChangeType(_evtValuesFloat, typeof(T[])) ;
+        // Debug.Log($"ReadValue<float> == {value}") ;
+        break ;
+
+      case Type t when t == typeof(int) :
+        values = (T[])Convert.ChangeType(_evtValuesInt, typeof(T[])) ;
+        // Debug.Log($"ReadValue<int> == {value}") ;
+        break ;
+
+      case Type t when t == typeof(bool) :
+        values = (T[])Convert.ChangeType(_evtValuesBool, typeof(T[])) ;
+        // Debug.Log($"ReadValue<bool> == {value}") ;
+        break ;
+
+      case Type t when t == typeof(Vector2) :
+        values = (T[])Convert.ChangeType(_evtValuesVector2, typeof(T[])) ;
+        // Debug.Log($"ReadValue<Vector2> == {value}") ;
+        break ;
+
+      case Type t when t == typeof(Vector3) :
+        values = (T[])Convert.ChangeType(_evtValuesVector3, typeof(T[])) ;
+        // Debug.Log($"ReadValue<Vector3> == {value}") ;
+        break ;
+
+      case Type t when t == typeof(Quaternion) :
+        values = (T[])Convert.ChangeType(_evtValuesQuaternion, typeof(T[])) ;
+        // Debug.Log($"ReadValue<Quaternion> == {value}") ;
+        break ;
+      
+      default:
+        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)} and {typeof(Vector3)}") ;
+    }
+    return values ;
   }
 
   public bool TryReadValue<T>(out T value)
@@ -148,72 +135,50 @@ public class GameEventContext
     value = default ;
     return false ;
   }
-#endregion
 
-
-#region (2) Constructor
-
-  public GameEventContext(GameObject source, string value1, float value2) : this(source,value1)
+  public bool TryReadValue<T>(int index, out T value)
   {
-    _evtValueFloat = value2 ;
-  }
-
-  public GameEventContext(GameObject source, float value1, string value2) : this(source,value1)
-  {
-    _evtValueString = value2 ;
-  }
-  
-  public GameEventContext(GameObject source, string value1, int value2) : this(source,value1)
-  {
-    _evtValueInt = value2 ;
-  }
-
-  public GameEventContext(GameObject source, int value1, string value2) : this(source,value1)
-  {
-    _evtValueString = value2 ;
-  }
-  
-  public GameEventContext(GameObject source, string value1, bool value2) : this(source,value1)
-  {
-    _evtValueBool = value2 ;
-  }
-
-  public GameEventContext(GameObject source, bool value1, string value2) : this(source,value1)
-  {
-    _evtValueString = value2 ;
+    try
+    {
+      value = ReadValue<T>(index) ;
+      return true ;
+    }
+    catch (ArgumentException e)
+    {
+      Debug.Log(e.Message) ;
+    }
+    value = default ;
+    return false ;
   }
 #endregion
 
 
-#region (1) Constructor
-  public GameEventContext(GameObject source, string value) : this(source,GameEventContextStatus.Sealed)
+#region (n) Constructor
+  /// <summary>
+  /// <para>The lowest-level constructor for OwnGameEventContext.</para>
+  /// </summary>
+  /// <param name="source">The dispatcher of the event.</param>
+  /// <param name="status">The state in which the context is initialized.</param>
+  public GameEventContext(
+    GameObject source,
+    string[] strings,
+    float[] floats,
+    int[] ints,
+    bool[] bools,
+    Vector2[] vector2s,
+    Vector3[] vector3s,
+    Quaternion[] quaternions
+  ) : this(source)
   {
-    _evtValueString = value ;
-  }
-  
-  public GameEventContext(GameObject source, float value) : this(source,GameEventContextStatus.Sealed)
-  {
-    _evtValueFloat = value ;
-  }
-  
-  public GameEventContext(GameObject source, int value) : this(source,GameEventContextStatus.Sealed)
-  {
-    _evtValueInt = value ;
-  }
-  
-  public GameEventContext(GameObject source, bool value) : this(source,GameEventContextStatus.Sealed)
-  {
-    _evtValueBool = value ;
-  }
-  
-  public GameEventContext(GameObject source, Vector2 value) : this(source,GameEventContextStatus.Sealed)
-  {
-    _evtValueVector2 = value ;
-  }
-  
-  public GameEventContext(GameObject source, Vector3 value) : this(source,GameEventContextStatus.Sealed)
-  {
-    _evtValueVector3 = value ;
+    _evtValuesString  = strings ;
+    _evtValuesFloat   = floats ;
+    _evtValuesInt     = ints ;
+    _evtValuesBool    = bools ;
+    _evtValuesVector2 = vector2s ;
+    _evtValuesVector3 = vector3s ;
+    _evtValuesQuaternion = quaternions ;
+
+    //Debug.Log( $"{_evtValuesFloat[0]}, {_evtValuesVector3[0]}, {_evtValuesVector3[1]}" ) ;
   }
 #endregion
 
@@ -224,14 +189,17 @@ public class GameEventContext
   /// </summary>
   /// <param name="source">The dispatcher of the event.</param>
   /// <param name="status">The state in which the context is initialized.</param>
-  public GameEventContext(GameObject source, GameEventContextStatus status = GameEventContextStatus.Sealed)
+  public GameEventContext(GameObject source)
   {
-    _isSealed = status ;
     Source = source ;
 
-    if( _evtValuePlayerSelect == PlayerSelect.None && Source.TryGetComponent(out PlayerController player) )
+    if( Source.TryGetComponent(out PlayerController player) )
     {
       _evtValuePlayerSelect = player.Identity ;
+    }
+    else
+    {
+      _evtValuePlayerSelect = PlayerSelect.None ;
     }
   }
 #endregion

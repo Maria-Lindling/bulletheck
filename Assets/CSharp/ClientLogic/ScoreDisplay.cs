@@ -108,8 +108,11 @@ private void OnDisable()
     Value.OnChange += OnValueChange ;
 
     yield return null ;
-    LinkedPlayer.Value = linkedPlayer ;
-    Value.Value = defaultValue ;
+    if( IsServerInitialized )
+    {
+      LinkedPlayer.Value = linkedPlayer ;
+      Value.Value = defaultValue ;
+    }
     
     Show() ;
   }

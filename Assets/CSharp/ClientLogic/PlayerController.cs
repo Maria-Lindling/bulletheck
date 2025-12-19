@@ -102,7 +102,7 @@ public class PlayerController : NetworkBehaviour
   [ServerRpc]
   private void Test_PrimaryAttack()
   {
-    GameEventSystem.ScorePoint.Invoke( new GameEventContext( gameObject, Random.Range(100,10000000), "#### #### 0000" ) ) ;
+    GameEventSystem.ScorePoint.Invoke( new GameEventContextBuilder(gameObject).AddValue<int>(Random.Range(100,10000000)).AddValue<string>("#### #### 0000").Build() ) ;
   }
 
   [ServerRpc]
@@ -145,7 +145,7 @@ public class PlayerController : NetworkBehaviour
     // Debug.Log($"SetPlayerReady: {name}") ;
     isReady.Value = !isReady.Value ;
 
-    GameEventSystem.PlayerRegister.Invoke( new GameEventContext(gameObject, transform.position.x < 0 ? 0 : 1, name) ) ;
+    GameEventSystem.PlayerRegister.Invoke( new GameEventContextBuilder(gameObject).AddValue<int>(transform.position.x < 0 ? 0 : 1).AddValue<string>(name).Build() ) ;
   }
 #endregion
 

@@ -15,17 +15,17 @@ public class BulletController : NetworkBehaviour
   {
     ContactPoint cp = other.contacts[0] ;
     goalVelocity = Vector3.Reflect(lastVelocity,cp.normal) ;
-    Debug.Log("LV" + lastVelocity) ;
+    // Debug.Log("LV" + lastVelocity) ;
   }
   private void OnTriggerEnter(Collider other)
   {
     switch( other.tag )
     {
       case "LeftGoal":
-        GameEventSystem.ScorePoint.Invoke( new GameEventContext(gameObject,1) ) ;
+        GameEventSystem.ScorePoint.Invoke( new GameEventContextBuilder(gameObject).AddValue<int>(1).Build() ) ;
         break ;
       case "RightGoal":
-        GameEventSystem.ScorePoint.Invoke( new GameEventContext(gameObject,0) ) ;
+        GameEventSystem.ScorePoint.Invoke( new GameEventContextBuilder(gameObject).AddValue<int>(0).Build() ) ;
         break ;
       default:
         return ;
@@ -46,14 +46,14 @@ public class BulletController : NetworkBehaviour
       return ;
     }
     rb = GetComponentInChildren<Rigidbody>() ;
-    goalVelocity = new Vector3( Random.Range(-1.0f, 1.0f), Random.Range(-0.5f,0.5f),0) ;
+    goalVelocity = transform.forward ;
   }
 
   private void FixedUpdate()
   {
     roundTime += Time.fixedDeltaTime ;
     lastVelocity = rb.linearVelocity ;
-    rb.linearVelocity = goalVelocity.normalized * Mathf.Max(roundTime / 10.0f, 4.0f) ;
+    rb.linearVelocity = goalVelocity.normalized * 3.667f ;
   }
 #endregion
 }

@@ -8,6 +8,10 @@ using static UnityEngine.InputSystem.InputAction;
 public class WorldManager : NetworkBehaviour
 {
 #region UnityEditor
+  [Header("Test / Debug")]
+  [SerializeField] private RadialBulletPattern testPattern ;
+  [SerializeField] private GameObject testPatternSpawnPoint ;
+
   [Header("Motion & Parallax")]
   [SerializeField] private GameObject sceneBackdrop ;
   [SerializeField] private float verticalScrollSpeed = 0.3334f ;
@@ -41,6 +45,9 @@ public class WorldManager : NetworkBehaviour
 #region Events
   public void OnPauseMenu(GameEventContext ctx)
   {
+    testPattern.Spawn(testPatternSpawnPoint) ;
+
+    /**
     switch( gameState.Value )
     {
       case GameState.WaitingForPlayers :
@@ -65,6 +72,7 @@ public class WorldManager : NetworkBehaviour
         // nothing
         break ;
     }
+    */
   }
 #endregion
 
@@ -106,6 +114,7 @@ public class WorldManager : NetworkBehaviour
     base.OnStartServer() ;
 
     sceneBackdrop.SetActive( true ) ;
+    gameState.Value = GameState.Playing ;
 
     if( TimeManager != null )
     {

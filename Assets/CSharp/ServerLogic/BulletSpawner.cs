@@ -8,18 +8,18 @@ public class BulletSpawner : NetworkBehaviour
 
   public void OnSpawnBullet(GameEventContext ctx)
   {
-    StartCoroutine( SpawnBullet( ctx.ReadValue<float>() ) ) ;
+    StartCoroutine( SpawnBullet( ctx.ReadValue<Vector3>(0), ctx.ReadValue<Vector3>(1), ctx.ReadValue<float>() ) ) ;
   }
 
   [Server]
-  public IEnumerator SpawnBullet(float delay)
+  public IEnumerator SpawnBullet(Vector3 origin, Vector3 heading, float delay)
   {
     yield return new WaitForSeconds(delay) ;
-    // if( WorldManager.CurrentState == GameState.Playing )
-    // {
-    //   GameObject bulletInstance = Instantiate(bulletPrefab) ;
-    //   Spawn(bulletInstance) ;
-    // }
+    
+    Debug.Log($"Heading: {heading}") ;
+    GameObject bulletInstance = Instantiate( bulletPrefab, origin, Quaternion.LookRotation(heading,Vector3.up) ) ;
+    
+    Spawn(bulletInstance) ;
   }
 
   private void Start()
