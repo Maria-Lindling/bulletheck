@@ -9,6 +9,9 @@ public class BulletController : NetworkBehaviour
   private Vector3 lastVelocity ;
   private Vector3 goalVelocity ;
 
+#region Setup
+  public float Speed { get ; private set ; }
+#endregion
 
 #region Events
   private void OnCollisionEnter(Collision other)
@@ -17,6 +20,7 @@ public class BulletController : NetworkBehaviour
     goalVelocity = Vector3.Reflect(lastVelocity,cp.normal) ;
     // Debug.Log("LV" + lastVelocity) ;
   }
+
   private void OnTriggerEnter(Collider other)
   {
     switch( other.tag )
@@ -36,6 +40,14 @@ public class BulletController : NetworkBehaviour
 #endregion
 
 
+#region Init
+  public void Initialize(float speed)
+  {
+    Speed = speed ;
+  }
+#endregion 
+
+
 #region MonoBehavior
   private void Start()
   {
@@ -53,7 +65,7 @@ public class BulletController : NetworkBehaviour
   {
     roundTime += Time.fixedDeltaTime ;
     lastVelocity = rb.linearVelocity ;
-    rb.linearVelocity = goalVelocity.normalized * 3.667f ;
+    rb.linearVelocity = goalVelocity.normalized * Speed ;
   }
 #endregion
 }

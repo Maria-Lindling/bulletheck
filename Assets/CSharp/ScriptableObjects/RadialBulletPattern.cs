@@ -6,16 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RadialBulletPattern", menuName = "Scriptable Objects/RadialBulletPattern")]
 public class RadialBulletPattern : ScriptableObject, IBulletPattern
 {
-  private Vector3[] fixedAngles =
-  {
-    new Vector3( 1.0f,  0.0f,  0.0f),
-    new Vector3( 0.71f, 0.71f, 0.0f),
-    new Vector3( 0.0f,  1.0f,  0.0f),
-    new Vector3( 0.0f,  1.0f,  0.0f),
-    new Vector3( 0.0f,  1.0f,  0.0f),
-    new Vector3( 0.0f,  1.0f,  0.0f),
-    new Vector3( 0.0f,  1.0f,  0.0f),
-  } ;
+  private const float DELAY_MULT = 2.3334f ;
 
   [SerializeField] GameObject bulletPrefab ;
   [SerializeField] float originOffset ;
@@ -28,10 +19,10 @@ public class RadialBulletPattern : ScriptableObject, IBulletPattern
   [SerializeField] float despawnTime ;
 
   public void Spawn(GameObject spawnPoint) => Spawn(spawnPoint,default) ;
-  public void Spawn(GameObject spawnPoint, GameObject source)
+  public void Spawn(GameObject spawnPoint, GameObject prefab)
   {
-    if( source == default )
-      source = spawnPoint ;
+    if( prefab == default )
+      prefab = bulletPrefab ;
 
     for( int i = 0; i<numberOfLines; i++ )
     {
@@ -39,10 +30,12 @@ public class RadialBulletPattern : ScriptableObject, IBulletPattern
       
       for( int j = 0; j<bulletsPerLine; j++ )
       {
-        GameEventContext ctx = new GameEventContextBuilder( source )
+        GameEventContext ctx = new GameEventContextBuilder( prefab )
           .AddValue<Vector3>(Origin)
           .AddValue<Vector3>(Heading)
-          .AddValue<float>( gapBetweenBullets / speed * j * 2.334f )
+          .AddValue<float>( gapBetweenBullets / speed * j * DELAY_MULT )
+          .AddValue<float>( speed )
+          .AddValue<float>( despawnTime )
           .Build() ;
 
         GameEventSystem.SpawnBullet.Invoke( ctx ) ;
