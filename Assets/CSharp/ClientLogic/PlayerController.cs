@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using static UnityEngine.InputSystem.InputAction;
 using UnityEngine.SocialPlatforms.Impl;
+using System.Runtime.InteropServices;
 
 [RequireComponent(typeof(LogDriver))]
 [RequireComponent(typeof(PlayerInput))]
@@ -39,6 +40,10 @@ public class PlayerController : NetworkBehaviour
   [SerializeField] private float maxX = 8.75f ;
   [SerializeField] private float minY = -4.5f ;
   [SerializeField] private float maxY = 4.75f ;
+
+  [SerializeField] private WeaponInfo primaryWeaponLeft ;
+  [SerializeField] private WeaponInfo primaryWeaponRight ;
+  [SerializeField] private WeaponInfo secondaryWeapon ;
 #endregion
 
 

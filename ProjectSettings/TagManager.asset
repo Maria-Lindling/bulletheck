@@ -41,5 +41,26 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Central-Frame
+    uniqueID: 943899639
+    locked: 0
+  - name: Cockpit
+    uniqueID: 3990171755
+    locked: 0
+  - name: Frame-Core
+    uniqueID: 1879688645
+    locked: 0
+  - name: Gadget-Trick
+    uniqueID: 2678598325
+    locked: 0
+  - name: Secondary-Weapon
+    uniqueID: 337819685
+    locked: 0
+  - name: Wings
+    uniqueID: 2852479497
+    locked: 0
+  - name: Primary-Weapon
+    uniqueID: 1741251045
+    locked: 0
   m_RenderingLayers:
   - Default
