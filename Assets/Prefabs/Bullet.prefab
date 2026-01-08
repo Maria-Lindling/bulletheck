@@ -247,6 +247,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4793650246464065461}
   _networkObjectCache: {fileID: 4793650246464065461}
+  sprite: {fileID: 2432727557629799587}
 --- !u!54 &5689834109008970436
 Rigidbody:
   m_ObjectHideFlags: 0

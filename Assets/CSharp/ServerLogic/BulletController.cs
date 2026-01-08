@@ -3,12 +3,14 @@ using FishNet.Object;
 using System.Collections;
 using System.Diagnostics;
 using FishNet.Demo.AdditiveScenes;
+using GameKit.Dependencies.Utilities;
 
-public class BulletController : NetworkBehaviour
+public class BulletController : NetworkBehaviour, IEntityController
 {
+  [SerializeField] GameObject sprite ;
+
   private Rigidbody rb ;
   private GameObject _source ;
-
   private Vector3 lastVelocity ;
   private Vector3 goalVelocity ;
 
@@ -22,12 +24,13 @@ public class BulletController : NetworkBehaviour
     if( other.gameObject.CompareTag( "Hitbox" ) )
     {
       if(
-        _source.TryGetComponent<PlayerController>(out PlayerController sourceController) &&
-        _source.TryGetComponent<PlayerController>(out PlayerController myController) &&
-        sourceController != myController
+        _source.TryGetComponent<IEntityController>(out IEntityController sourceController) &&
+        other.transform.parent.TryGetComponent<IEntityController>(out IEntityController otherController) &&
+        sourceController != otherController
       )
       {
         // impact/damage logic
+        Speed = 0.0f ;
         StartCoroutine( ShrinkAndDespawn() ) ;
       }
     }
@@ -98,8 +101,12 @@ public class BulletController : NetworkBehaviour
       Destroy( this ) ;
       return ;
     }
+
     rb = GetComponentInChildren<Rigidbody>() ;
+
     goalVelocity = transform.forward ;
+
+    sprite.transform.LookAt( Camera.main.transform ) ;
   }
 
   private void FixedUpdate()

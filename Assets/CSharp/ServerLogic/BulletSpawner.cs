@@ -43,6 +43,9 @@ public class BulletSpawner : NetworkBehaviour
   {
     yield return new WaitForSeconds(delay) ;
 
+    if( bulletInstance == null )
+      yield break ;
+
     Despawn( bulletInstance ) ;
   }
 

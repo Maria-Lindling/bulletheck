@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using static UnityEngine.InputSystem.InputAction;
 
 [RequireComponent(typeof(GameDatabaseClient))]
-public class WorldManager : NetworkBehaviour
+public class WorldManager : NetworkBehaviour, IEntityController
 {
 #region UnityEditor
   [Header("Test / Debug")]
@@ -45,7 +45,7 @@ public class WorldManager : NetworkBehaviour
 #region Events
   public void OnPauseMenu(GameEventContext ctx)
   {
-    testPattern.Spawn(testPatternSpawnPoint) ;
+    testPattern.Spawn(testPatternSpawnPoint,gameObject) ;
 
     /**
     switch( gameState.Value )

@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 // [RequireComponent(typeof(PlayerInput))]
 // [RequireComponent(typeof(LogDriver))]
-public class PlayerController : NetworkBehaviour
+public class PlayerController : NetworkBehaviour, IEntityController
 {
 #region SyncVar
   private readonly SyncVar<Color> playerColor = new() ;
