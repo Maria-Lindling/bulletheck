@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 781fd5ab3a9ea574d8e70a54a905a2fb, type: 3}
+  m_Name: Burst120_FrontTowardsEnemy
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 7054742197131258266, guid: 6dba1860e47418b4b99eb74258877afd, type: 3}
+  originOffset: 0.334
+  headingOffset: -30
+  speed: 6.667
+  numberOfLines: 5
+  gapBetweenLines: 30
+  bulletsPerLine: 3
+  gapBetweenBullets: 0.334
+  despawnTime: 6.667

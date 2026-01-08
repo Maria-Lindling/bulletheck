@@ -122,4 +122,9 @@ public class WorldManager : NetworkBehaviour, IEntityController
     }
   }
 #endregion
+
+
+#region IEntityController
+  public bool TryDamageEntity(float damage) => false ;
+#endregion
 }

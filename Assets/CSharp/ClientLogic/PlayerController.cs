@@ -16,6 +16,7 @@ using System.Collections.Generic;
 public class PlayerController : NetworkBehaviour, IEntityController
 {
 #region SyncVar
+  private readonly SyncVar<float> syncHtPoints = new() ;
   private readonly SyncVar<Color> playerColor = new() ;
   private readonly SyncVar<bool> isReady = new() ;
 #endregion
@@ -38,6 +39,7 @@ public class PlayerController : NetworkBehaviour, IEntityController
 
 
 #region Unity Editor
+  [SerializeField] private float hitPoints = 100.0f ;
   [SerializeField] private float moveSpeed = 5.0f ;
   [SerializeField] private float minX = -8.75f ;
   [SerializeField] private float maxX = 8.75f ;
@@ -47,6 +49,7 @@ public class PlayerController : NetworkBehaviour, IEntityController
   [SerializeField] private WeaponInfo primaryWeapon ;
   [SerializeField] private List<Transform> primaryWeaponOrigins ;
   [SerializeField] private WeaponInfo secondaryWeapon ;
+  [SerializeField] private Transform secondaryWeaponOrigin ;
 #endregion
 
 
@@ -68,6 +71,16 @@ public class PlayerController : NetworkBehaviour, IEntityController
       return ;
     
     Test_PrimaryAttack() ;
+  }
+
+  /// <summary>
+  /// <para>Action taken on primary attack input. (Keyboard default: mouse-1)</para>
+  /// <para>Implicitly Owner-exclusive.</para>
+  /// </summary>
+  /// <param name="ctx"></param>
+  public void OnSecondaryAttack(CallbackContext ctx)
+  {
+    _currentSecondaryAttack = ctx.ReadValueAsButton() ;
   }
 
   /// <summary>
@@ -140,16 +153,19 @@ public class PlayerController : NetworkBehaviour, IEntityController
   [ServerRpc]
   private void UpdateAutoAttack()
   {
-    if( !_currentPrimaryAttack )
-      return ;
-
-    if( primaryWeapon.Weapon.RefireCooldown.IsComplete )
+    if( _currentPrimaryAttack && primaryWeapon.Weapon.RefireCooldown.IsComplete )
     {
       foreach( Transform attackOrigin in primaryWeaponOrigins )
       {
         primaryWeapon.Weapon.BulletPattern.Spawn( attackOrigin, gameObject ) ;
       }
       primaryWeapon.Weapon.RefireCooldown.Restart() ;
+    }
+
+    if( _currentSecondaryAttack && secondaryWeapon.Weapon.RefireCooldown.IsComplete )
+    {
+      secondaryWeapon.Weapon.BulletPattern.Spawn( secondaryWeaponOrigin, gameObject ) ;
+      secondaryWeapon.Weapon.RefireCooldown.Restart() ;
     }
   }
 
@@ -181,6 +197,12 @@ public class PlayerController : NetworkBehaviour, IEntityController
   {
     playerRenderer.material.color = next ;
   }
+
+  private void OnHitPointsChanged(float prev, float next, bool isServer )
+  {
+    // update hit points display
+    // if change was negative, grant i-frames
+  }
 #endregion
 
 
@@ -202,6 +224,7 @@ public class PlayerController : NetworkBehaviour, IEntityController
   private IEnumerator DelayedIsOwner()
   {
     playerColor.OnChange += OnColorChanged ;
+    syncHtPoints.OnChange += OnHitPointsChanged ;
 
     playerRenderer  = GetComponentInChildren<Renderer>() ;
     playerRenderer.material = new Material(playerRenderer.material) ;
@@ -264,6 +287,21 @@ public class PlayerController : NetworkBehaviour, IEntityController
   private void Start()
   {
     StartCoroutine( DelayedIsOwner() ) ;
+  }
+#endregion
+
+
+#region IEntityController
+  public bool TryDamageEntity(float damage)
+  {
+    if( damage <= 0.0f )
+      return false ;
+
+    syncHtPoints.Value -= damage ;
+
+    // Debug.Log( $"{name} was hit for {damage} damage! {hitPoints} hit points remain." ) ;
+
+    return true ;
   }
 #endregion
 }

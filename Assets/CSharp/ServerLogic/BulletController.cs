@@ -8,6 +8,7 @@ using GameKit.Dependencies.Utilities;
 public class BulletController : NetworkBehaviour, IEntityController
 {
   [SerializeField] GameObject sprite ;
+  [SerializeField] float damage ;
 
   private Rigidbody rb ;
   private GameObject _source ;
@@ -30,6 +31,8 @@ public class BulletController : NetworkBehaviour, IEntityController
       )
       {
         // impact/damage logic
+        otherController.TryDamageEntity( damage ) ;
+
         Speed = 0.0f ;
         StartCoroutine( ShrinkAndDespawn() ) ;
       }
@@ -114,5 +117,10 @@ public class BulletController : NetworkBehaviour, IEntityController
     lastVelocity = rb.linearVelocity ;
     rb.linearVelocity = goalVelocity.normalized * Speed ;
   }
+#endregion
+
+
+#region IEntityController
+  public bool TryDamageEntity(float damage) => false ;
 #endregion
 }

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09dffdaabb8900d4081296f9448d1969, type: 3}
   m_Name: RadialBlastGun
   m_EditorClassIdentifier: 
-  bulletPattern: {fileID: 11400000, guid: bda5a0730d117204ab3c057a7d60c02f, type: 2}
+  bulletPattern: {fileID: 11400000, guid: 1a1a183269dd5e04ba6cfb8efc5ebd3f, type: 2}
+  refireCooldown: 667

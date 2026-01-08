@@ -209,7 +209,7 @@ GameObject:
   - component: {fileID: -8305036298234246550}
   - component: {fileID: 4793650246464065461}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: BasicBlasterBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -248,6 +248,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 4793650246464065461}
   _networkObjectCache: {fileID: 4793650246464065461}
   sprite: {fileID: 2432727557629799587}
+  damage: 33.34
 --- !u!54 &5689834109008970436
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -352,7 +353,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584337392946970471
+  _initializedTimestamp: -8584337306353816020
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -367,12 +368,12 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 4086663663084549645
+  <AssetPathHash>k__BackingField: 1734058360111172477
   SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Rotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
     Scale: {x: 1, y: 1, z: 1}
     IsValid: 1

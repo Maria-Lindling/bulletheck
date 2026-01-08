@@ -449,7 +449,7 @@ MonoBehaviour:
   testPattern: {fileID: 11400000, guid: bda5a0730d117204ab3c057a7d60c02f, type: 2}
   testPatternSpawnPoint: {fileID: 1955912510}
   sceneBackdrop: {fileID: 487811952}
-  verticalScrollSpeed: 1
+  verticalScrollSpeed: 0.334
   lookParallaxIntensity: 1
 --- !u!114 &443183463
 MonoBehaviour:
