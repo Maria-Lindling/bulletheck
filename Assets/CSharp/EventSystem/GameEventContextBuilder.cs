@@ -14,6 +14,7 @@ public class GameEventContextBuilder
   private readonly List<Vector2> _evtValuesVector2 = new() ;
   private readonly List<Vector3> _evtValuesVector3 = new() ;
   private readonly List<Quaternion> _evtValuesQuaternion = new() ;
+  private readonly List<GameObject> _evtValuesPrefab = new() ;
   private PlayerSelect _evtValuePlayerSelect ;
 #endregion
 
@@ -57,13 +58,17 @@ public class GameEventContextBuilder
         _evtValuesQuaternion.Add(v) ;
         // Debug.Log($"AddValue<Quaternion>({v})") ;
         break ;
+      
+      case GameObject v:
+        _evtValuesPrefab.Add(v) ;
+        break ;
 
       case PlayerSelect v:
         _evtValuePlayerSelect = v ;
         break ;
       
       default :
-        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)} and {typeof(PlayerSelect)}") ;
+        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)}, {typeof(PlayerSelect)} and {typeof(GameObject)}") ;
     }
     return this ;
   }
@@ -79,7 +84,8 @@ public class GameEventContextBuilder
       _evtValuesBool.ToArray(),
       _evtValuesVector2.ToArray(),
       _evtValuesVector3.ToArray(),
-      _evtValuesQuaternion.ToArray()
+      _evtValuesQuaternion.ToArray(),
+      _evtValuesPrefab.ToArray()
     ) ;
   }
 

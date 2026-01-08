@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Hurtbox
+  - Hitbox
   layers:
   - Default
   - TransparentFX
@@ -38,6 +40,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Backdrop
+    uniqueID: 3757668413
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
@@ -61,6 +66,9 @@ TagManager:
     locked: 0
   - name: Primary-Weapon
     uniqueID: 1741251045
+    locked: 0
+  - name: Bullet
+    uniqueID: 2974647799
     locked: 0
   m_RenderingLayers:
   - Default

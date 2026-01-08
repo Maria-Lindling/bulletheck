@@ -335,7 +335,6 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1317969004}
   _networkObjectCache: {fileID: 0}
-  bulletPrefab: {fileID: 7054742197131258266, guid: 6dba1860e47418b4b99eb74258877afd, type: 3}
 --- !u!1 &190357650
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,7 +1031,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 00000000f7c342386b30d5edc5c50970b52aa89f25b82214096205aae561c967f7854db13d78f9df
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1603,6 +1602,14 @@ PrefabInstance:
     - target: {fileID: 3283140058047265552, guid: 084d4f85a4862b8408a25abf3395093d, type: 3}
       propertyPath: m_Name
       value: Backdrop
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484768544029910391, guid: 084d4f85a4862b8408a25abf3395093d, type: 3}
+      propertyPath: m_SortingLayer
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484768544029910391, guid: 084d4f85a4862b8408a25abf3395093d, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -537298883
       objectReference: {fileID: 0}
     - target: {fileID: 5317175979161458979, guid: 084d4f85a4862b8408a25abf3395093d, type: 3}
       propertyPath: m_LocalPosition.x

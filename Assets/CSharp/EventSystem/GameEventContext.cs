@@ -15,6 +15,7 @@ public class GameEventContext
   private readonly Vector2[] _evtValuesVector2 ;
   private readonly Vector3[] _evtValuesVector3 ;
   private readonly Quaternion[] _evtValuesQuaternion ;
+  private readonly GameObject[] _evtValuesPrefab ;
   private readonly PlayerSelect _evtValuePlayerSelect ;
 #endregion
 
@@ -65,12 +66,16 @@ public class GameEventContext
         // Debug.Log($"ReadValue<Quaternion> == {value}") ;
         break ;
 
+      case Type t when t == typeof(GameObject) :
+        value = (T)Convert.ChangeType(_evtValuesPrefab[index], typeof(T)) ;
+        break ;
+
       case Type t when t == typeof(PlayerSelect) :
         value = (T)Convert.ChangeType(_evtValuePlayerSelect, typeof(T)) ;
         break ;
       
       default:
-        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)} and {typeof(PlayerSelect)}") ;
+        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)}, {typeof(PlayerSelect)} and {typeof(GameObject)}") ;
     }
     return value ;
   }
@@ -114,9 +119,14 @@ public class GameEventContext
         values = (T[])Convert.ChangeType(_evtValuesQuaternion, typeof(T[])) ;
         // Debug.Log($"ReadValue<Quaternion> == {value}") ;
         break ;
+
+      case Type t when t == typeof(GameObject) :
+        values = (T[])Convert.ChangeType(_evtValuesQuaternion, typeof(T[])) ;
+        // Debug.Log($"ReadValue<Quaternion> == {value}") ;
+        break ;
       
       default:
-        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)} and {typeof(Vector3)}") ;
+        throw new ArgumentException($"The type '{typeof(T)}' is not an accepted type parameter. Accepted type parameters are {typeof(string)}, {typeof(float)}, {typeof(int)}, {typeof(bool)}, {typeof(Vector2)}, {typeof(Vector3)}, {typeof(PlayerSelect)} and {typeof(GameObject)}") ;
     }
     return values ;
   }
@@ -167,7 +177,8 @@ public class GameEventContext
     bool[] bools,
     Vector2[] vector2s,
     Vector3[] vector3s,
-    Quaternion[] quaternions
+    Quaternion[] quaternions,
+    GameObject[] prefabs
   ) : this(source)
   {
     _evtValuesString  = strings ;
@@ -177,6 +188,7 @@ public class GameEventContext
     _evtValuesVector2 = vector2s ;
     _evtValuesVector3 = vector3s ;
     _evtValuesQuaternion = quaternions ;
+    _evtValuesPrefab = prefabs ;
 
     //Debug.Log( $"{_evtValuesFloat[0]}, {_evtValuesVector3[0]}, {_evtValuesVector3[1]}" ) ;
   }

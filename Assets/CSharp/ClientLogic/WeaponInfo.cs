@@ -13,5 +13,9 @@ using System;
 public class WeaponInfo
 {
   [SerializeField] WeaponScriptableObject weapon ;
-  [SerializeField] Transform origin ;
+  //[SerializeField] Transform origin ;
+
+
+  public WeaponScriptableObject Weapon => weapon ;
+  //public Transform Origin => origin ;
 }

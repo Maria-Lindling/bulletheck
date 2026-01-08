@@ -4,31 +4,35 @@ using System.Collections;
 
 public class BulletSpawner : NetworkBehaviour
 {
-  [SerializeField] private GameObject bulletPrefab ;
-
   public void OnSpawnBullet(GameEventContext ctx)
   {
     StartCoroutine( SpawnBullet(
+      ctx.Source,
+      ctx.ReadValue<GameObject>(0),
       ctx.ReadValue<Vector3>(0),
       ctx.ReadValue<Vector3>(1),
       ctx.ReadValue<float>(0),
       ctx.ReadValue<float>(1),
-      ctx.ReadValue<float>(2),
-      ctx.Source
+      ctx.ReadValue<float>(2)
     ) ) ;
   }
 
   [Server]
-  public IEnumerator SpawnBullet(Vector3 origin, Vector3 heading, float delay, float speed, float despawnTime, GameObject prefab = default)
+  public IEnumerator SpawnBullet(
+    GameObject source,
+    GameObject prefab,
+    Vector3 origin,
+    Vector3 heading,
+    float speed,
+    float delay,
+    float despawnTime
+  )
   {
-    if( prefab == default)
-      prefab = bulletPrefab ;
-
     yield return new WaitForSeconds(delay) ;
 
     GameObject bulletInstance = Instantiate( prefab, origin, Quaternion.LookRotation(heading,Vector3.up) ) ;
 
-    bulletInstance.GetComponent<BulletController>().Initialize( speed ) ;
+    bulletInstance.GetComponent<BulletController>().Initialize( source, speed ) ;
     
     Spawn(bulletInstance) ;
 

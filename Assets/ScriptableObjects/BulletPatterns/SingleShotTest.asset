@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 781fd5ab3a9ea574d8e70a54a905a2fb, type: 3}
-  m_Name: Burst180Test
+  m_Name: SingleShotTest
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 7054742197131258266, guid: 6dba1860e47418b4b99eb74258877afd, type: 3}
-  originOffset: 1.334
-  headingOffset: 180
+  originOffset: 0.334
+  headingOffset: -90
   speed: 6.667
-  numberOfLines: 7
-  gapBetweenLines: 30
+  numberOfLines: 1
+  gapBetweenLines: 0
   bulletsPerLine: 3
-  gapBetweenBullets: 0.5334
-  despawnTime: 6.667
+  gapBetweenBullets: 0.334
+  despawnTime: 3.667

@@ -6,6 +6,7 @@ using System.Collections;
 using static UnityEngine.InputSystem.InputAction;
 using UnityEngine.SocialPlatforms.Impl;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(LogDriver))]
 [RequireComponent(typeof(PlayerInput))]
@@ -25,6 +26,8 @@ public class PlayerController : NetworkBehaviour
   private LogDriver logDriver ;
   private PlayerInput playerInput ;
   private Vector2 _currentMovement ;
+  private bool _currentPrimaryAttack ;
+  private bool _currentSecondaryAttack ;
 #endregion
 
 
@@ -41,8 +44,8 @@ public class PlayerController : NetworkBehaviour
   [SerializeField] private float minY = -4.5f ;
   [SerializeField] private float maxY = 4.75f ;
 
-  [SerializeField] private WeaponInfo primaryWeaponLeft ;
-  [SerializeField] private WeaponInfo primaryWeaponRight ;
+  [SerializeField] private WeaponInfo primaryWeapon ;
+  [SerializeField] private List<Transform> primaryWeaponOrigins ;
   [SerializeField] private WeaponInfo secondaryWeapon ;
 #endregion
 
@@ -59,6 +62,8 @@ public class PlayerController : NetworkBehaviour
   /// <param name="ctx"></param>
   public void OnPrimaryAttack(CallbackContext ctx)
   {
+    _currentPrimaryAttack = ctx.ReadValueAsButton() ;
+
     if( !ctx.performed )
       return ;
     
@@ -130,6 +135,22 @@ public class PlayerController : NetworkBehaviour
       Mathf.Clamp( transform.position.y + _currentMovement.y, minY, maxY ),
       0
     ) ;
+  }
+
+  [ServerRpc]
+  private void UpdateAutoAttack()
+  {
+    if( !_currentPrimaryAttack )
+      return ;
+
+    if( primaryWeapon.Weapon.RefireCooldown.IsComplete )
+    {
+      foreach( Transform attackOrigin in primaryWeaponOrigins )
+      {
+        primaryWeapon.Weapon.BulletPattern.Spawn( attackOrigin, gameObject ) ;
+      }
+      primaryWeapon.Weapon.RefireCooldown.Restart() ;
+    }
   }
 
   [ServerRpc]
@@ -234,6 +255,7 @@ public class PlayerController : NetworkBehaviour
       return ;
 
     UpdatePosition() ;
+    UpdateAutoAttack() ;
   }
 #endregion
 
