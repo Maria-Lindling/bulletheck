@@ -3,14 +3,18 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Unity.VisualScripting;
 using static UnityEngine.InputSystem.InputAction;
+using System.Collections.Generic;
+using FishNet.Demo.AdditiveScenes;
+using System;
+using System.Collections;
 
 [RequireComponent(typeof(GameDatabaseClient))]
 public class WorldManager : NetworkBehaviour, IEntityController
 {
 #region UnityEditor
-  [Header("Test / Debug")]
-  [SerializeField] private RadialBulletPattern testPattern ;
-  [SerializeField] private GameObject testPatternSpawnPoint ;
+  [Header("Encounter")]
+  [SerializeField] private List<GameObject> enemySpawnPoints ;
+  [SerializeField] private EncounterScriptableObject encounter ;
 
   [Header("Motion & Parallax")]
   [SerializeField] private GameObject sceneBackdrop ;
@@ -33,7 +37,6 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   [Header("Game")]
   private readonly SyncVar<GameState> gameState = new() ;
-  private readonly SyncVar<Color> ballColor = new() ;
 #endregion
 
 
@@ -42,10 +45,47 @@ public class WorldManager : NetworkBehaviour, IEntityController
 #endregion
 
 
-#region Events
+#region 
+  private List<PlayerController> _registeredPlayers = new() ;
+#endregion
+
+#region 
+  public ForceSelection Force => ForceSelection.None ;
+#endregion
+
+
+  private void CheckScenarioBegin()
+  {
+    if( _registeredPlayers.Count < 1 )
+      return ;
+
+    sceneBackdrop.SetActive( true ) ;
+    gameState.Value = GameState.Playing ;
+    GameEventSystem.ScenarioBegin.Invoke( new GameEventContext( gameObject ) ) ;
+  }
+
+
+  #region Events
+  public void OnPlayerRegister(GameEventContext ctx)
+  {
+    if( ctx.Source.TryGetComponent<PlayerController>(out PlayerController playerController))
+    {
+      _registeredPlayers.Add( playerController ) ;
+    }
+
+    CheckScenarioBegin() ;
+  }
+
+  public void OnScenarioBegin(GameEventContext ctx)
+  {
+    Queue<EncounterEntry> encounterQueue = new(encounter.Data) ;
+
+    StartCoroutine( RollOutEncounter(encounterQueue) ) ;
+  }
+
   public void OnPauseMenu(GameEventContext ctx)
   {
-    testPattern.Spawn(testPatternSpawnPoint,gameObject) ;
+    //testPattern.Spawn(testPatternSpawnPoint,gameObject) ;
 
     /**
     switch( gameState.Value )
@@ -73,6 +113,26 @@ public class WorldManager : NetworkBehaviour, IEntityController
         break ;
     }
     */
+  }
+#endregion
+
+
+#region Encounter
+  private IEnumerator RollOutEncounter(Queue<EncounterEntry> encounterQueue)
+  {
+    while( encounterQueue.Count > 0 )
+    {
+      EncounterEntry entry = encounterQueue.Dequeue() ;
+      yield return new WaitForSeconds(entry.Delay) ;
+
+      GameEventContext entryCtx = new GameEventContextBuilder(gameObject)
+        .AddValue(entry.Prefab)
+        .AddValue(enemySpawnPoints[entry.SpawnPoint % enemySpawnPoints.Count].transform.position)
+        .Build() ;
+
+      GameEventSystem.SpawnEnemy.Invoke( entryCtx ) ;
+    }
+    yield return null ;
   }
 #endregion
 
@@ -112,9 +172,6 @@ public class WorldManager : NetworkBehaviour, IEntityController
   public override void OnStartServer()
   {
     base.OnStartServer() ;
-
-    sceneBackdrop.SetActive( true ) ;
-    gameState.Value = GameState.Playing ;
 
     if( TimeManager != null )
     {

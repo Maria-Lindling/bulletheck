@@ -15,7 +15,10 @@ public class GameEventSystem : NetworkBehaviour
   public static UnityEvent<GameEventContext> ScorePoint { get; private set ; }
   public static UnityEvent<GameEventContext> PlayerRegister { get; private set ; }
   public static UnityEvent<GameEventContext> SpawnBullet { get; private set ; }
+  public static UnityEvent<GameEventContext> SpawnEnemy { get; private set ; }
   public static UnityEvent<GameEventContext> PauseMenu { get; private set ; }
+
+  public static UnityEvent<GameEventContext> ScenarioBegin { get; private set ; }
 
   private void Start()
   {
@@ -25,6 +28,8 @@ public class GameEventSystem : NetworkBehaviour
     ScorePoint = playerEvents.scorePoint ;
     PlayerRegister = playerEvents.playerRegister ;
     SpawnBullet = playerEvents.spawnBullet ;
+    SpawnEnemy = metaEvents.spawnEnemy ;
     PauseMenu = metaEvents.pauseMenu ;
+    ScenarioBegin = metaEvents.scenarioBegin ;
   }
 }

@@ -798,7 +798,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -959,8 +959,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.667, y: 0.667, z: 0.667}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3977531079463899991}
   - {fileID: 3671861763017202234}
@@ -987,6 +987,10 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3354985067614939379}
   _networkObjectCache: {fileID: 3354985067614939379}
+  force: 3
+  hitPoints: 100
+  damageIFrameTime: 1.5
+  hurtSprite: {fileID: 1553158744330951805}
   moveSpeed: 5
   minX: -8.75
   maxX: 8.75

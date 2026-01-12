@@ -29,17 +29,23 @@ public class PlayerController : NetworkBehaviour, IEntityController
   private Vector2 _currentMovement ;
   private bool _currentPrimaryAttack ;
   private bool _currentSecondaryAttack ;
+  private uint _primaryWeaponCooldownEnd = 0 ;
+  private uint _secondaryWeaponCooldownEnd = 0 ;
 #endregion
 
 
 #region Properties
   public bool IsReady => isReady.Value ;
   public PlayerSelect Identity { get ; private set ; }
+  public ForceSelection Force => force ;
 #endregion
 
 
 #region Unity Editor
+  [SerializeField] private ForceSelection force = ForceSelection.Player ;
   [SerializeField] private float hitPoints = 100.0f ;
+  [SerializeField] private float damageIFrameTime = 1.5f ;
+  [SerializeField] private SpriteRenderer hurtSprite ;
   [SerializeField] private float moveSpeed = 5.0f ;
   [SerializeField] private float minX = -8.75f ;
   [SerializeField] private float maxX = 8.75f ;
@@ -50,6 +56,9 @@ public class PlayerController : NetworkBehaviour, IEntityController
   [SerializeField] private List<Transform> primaryWeaponOrigins ;
   [SerializeField] private WeaponInfo secondaryWeapon ;
   [SerializeField] private Transform secondaryWeaponOrigin ;
+
+  private uint iFramesEnd = 0 ;
+  private uint damageFlashEnd = 0 ;
 #endregion
 
 
@@ -123,6 +132,12 @@ public class PlayerController : NetworkBehaviour, IEntityController
 
 #region ServerRpc
   [ServerRpc]
+  private void RegisterPlayer()
+  {
+    GameEventSystem.PlayerRegister.Invoke( new GameEventContext( gameObject ) ) ;
+  }
+
+  [ServerRpc]
   private void Test_PrimaryAttack()
   {
     GameEventSystem.ScorePoint.Invoke( new GameEventContextBuilder(gameObject).AddValue<int>(Random.Range(100,10000000)).AddValue<string>("#### #### 0000").Build() ) ;
@@ -153,19 +168,19 @@ public class PlayerController : NetworkBehaviour, IEntityController
   [ServerRpc]
   private void UpdateAutoAttack()
   {
-    if( _currentPrimaryAttack && primaryWeapon.Weapon.RefireCooldown.IsComplete )
+    if( _currentPrimaryAttack && TimeManager.LocalTick >= _primaryWeaponCooldownEnd )
     {
       foreach( Transform attackOrigin in primaryWeaponOrigins )
       {
         primaryWeapon.Weapon.BulletPattern.Spawn( attackOrigin, gameObject ) ;
       }
-      primaryWeapon.Weapon.RefireCooldown.Restart() ;
+      _primaryWeaponCooldownEnd = TimeManager.LocalTick + TimeManager.TimeToTicks( primaryWeapon.Weapon.RawCooldown ) ;
     }
 
-    if( _currentSecondaryAttack && secondaryWeapon.Weapon.RefireCooldown.IsComplete )
+    if( _currentSecondaryAttack && TimeManager.LocalTick >= _secondaryWeaponCooldownEnd )
     {
       secondaryWeapon.Weapon.BulletPattern.Spawn( secondaryWeaponOrigin, gameObject ) ;
-      secondaryWeapon.Weapon.RefireCooldown.Restart() ;
+      _secondaryWeaponCooldownEnd = TimeManager.LocalTick + TimeManager.TimeToTicks( secondaryWeapon.Weapon.RawCooldown ) ;
     }
   }
 
@@ -200,8 +215,28 @@ public class PlayerController : NetworkBehaviour, IEntityController
 
   private void OnHitPointsChanged(float prev, float next, bool isServer )
   {
-    // update hit points display
-    // if change was negative, grant i-frames
+    if( TimeManager.LocalTick > damageFlashEnd )
+      StartCoroutine( DamageFlash(1.5d) ) ;
+    iFramesEnd = TimeManager.LocalTick + TimeManager.TimeToTicks( damageIFrameTime ) ;
+  }
+#endregion
+
+
+#region 
+  private IEnumerator DamageFlash(double duration)
+  {
+    damageFlashEnd = TimeManager.LocalTick + TimeManager.TimeToTicks(duration) ;
+    Color initialColor = hurtSprite.color ;
+    while( TimeManager.LocalTick < damageFlashEnd )
+    {
+      hurtSprite.color = Color.white ;
+      yield return new WaitForSeconds( (float)TimeManager.TicksToTime(3) ) ;
+
+      hurtSprite.color = Color.black ;
+      yield return new WaitForSeconds( (float)TimeManager.TicksToTime(3) ) ;
+    }
+    yield return null ;
+    hurtSprite.color = initialColor ;
   }
 #endregion
 
@@ -258,6 +293,8 @@ public class PlayerController : NetworkBehaviour, IEntityController
       playerInput.enabled = true ;
       logDriver.enabled   = true ;
 
+      RegisterPlayer() ;
+
       if( TimeManager != null )
       {
         TimeManager.OnTick += OnTick ;
@@ -294,12 +331,10 @@ public class PlayerController : NetworkBehaviour, IEntityController
 #region IEntityController
   public bool TryDamageEntity(float damage)
   {
-    if( damage <= 0.0f )
+    if( damage <= 0.0f && TimeManager.LocalTick <= iFramesEnd )
       return false ;
 
     syncHtPoints.Value -= damage ;
-
-    // Debug.Log( $"{name} was hit for {damage} damage! {hitPoints} hit points remain." ) ;
 
     return true ;
   }

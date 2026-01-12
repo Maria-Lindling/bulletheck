@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09dffdaabb8900d4081296f9448d1969, type: 3}
-  m_Name: BasicBlaster
+  m_Name: Radial360Gun
   m_EditorClassIdentifier: 
-  bulletPattern: {fileID: 11400000, guid: 09cc280fe58a01342af24611d2c1fd8e, type: 2}
-  refireCooldown: 0.545
+  bulletPattern: {fileID: 11400000, guid: b2bbe16d9fdf7a74d80f8c4b2ed94df5, type: 2}
+  refireCooldown: 7.334

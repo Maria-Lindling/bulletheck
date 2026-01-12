@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: RadialBlastGun
   m_EditorClassIdentifier: 
   bulletPattern: {fileID: 11400000, guid: 1a1a183269dd5e04ba6cfb8efc5ebd3f, type: 2}
-  refireCooldown: 667
+  refireCooldown: 2.75
