@@ -205,7 +205,7 @@ public class GameEventContext
   {
     Source = source ;
 
-    if( Source.TryGetComponent(out PlayerController player) )
+    if( Source.TryGetComponent(out PlayerVessel player) )
     {
       _evtValuePlayerSelect = player.Identity ;
     }

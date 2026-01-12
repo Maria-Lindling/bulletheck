@@ -67,6 +67,9 @@ TagManager:
   - name: Primary-Weapon
     uniqueID: 1741251045
     locked: 0
+  - name: Turret
+    uniqueID: 3370607887
+    locked: 0
   - name: Bullet
     uniqueID: 2974647799
     locked: 0

@@ -4,6 +4,7 @@ using System.Collections;
 
 public class EnemySpawner : NetworkBehaviour
 {
+  [SerializeField] private GameObject gameEntitiesObject ;
   [SerializeField] float despawnTime = 30.0f ;
 
   public void OnSpawnEnemy(GameEventContext ctx)
@@ -17,6 +18,8 @@ public class EnemySpawner : NetworkBehaviour
     yield return null ;
 
     GameObject enemyInstance = Instantiate( prefab, origin, new Quaternion() ) ;
+
+    enemyInstance.transform.SetParent( gameEntitiesObject.transform ) ;
     
     Spawn(enemyInstance) ;
 

@@ -7,11 +7,17 @@ using System.Collections.Generic;
 using FishNet.Demo.AdditiveScenes;
 using System;
 using System.Collections;
+using FishNet.Example.Scened;
 
 [RequireComponent(typeof(GameDatabaseClient))]
 public class WorldManager : NetworkBehaviour, IEntityController
 {
 #region UnityEditor
+  [Header("Players")]
+  [SerializeField] private GameObject playerVessel ;
+  [SerializeField] private GameObject playerSpawnPoint ;
+  [SerializeField] private GameObject clientLogicObject ;
+
   [Header("Encounter")]
   [SerializeField] private List<GameObject> enemySpawnPoints ;
   [SerializeField] private EncounterScriptableObject encounter ;
@@ -46,7 +52,7 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
 
 #region 
-  private List<PlayerController> _registeredPlayers = new() ;
+  private List<ClientShell> _connectedPlayers = new() ;
 #endregion
 
 #region 
@@ -56,24 +62,44 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   private void CheckScenarioBegin()
   {
-    if( _registeredPlayers.Count < 1 )
+    if( _connectedPlayers.Count < 2 )
       return ;
+    
+    GameEventContext vesselCtx = new GameEventContextBuilder( gameObject )
+      .AddValue<GameObject>(playerVessel)
+      .AddValue<Vector3>(playerSpawnPoint.transform.position)
+      .Build() ;
 
-    sceneBackdrop.SetActive( true ) ;
-    gameState.Value = GameState.Playing ;
-    GameEventSystem.ScenarioBegin.Invoke( new GameEventContext( gameObject ) ) ;
+    GameEventSystem.SpawnVessel.Invoke( vesselCtx ) ;
   }
 
 
   #region Events
-  public void OnPlayerRegister(GameEventContext ctx)
+  public void OnClientConnect(GameEventContext ctx)
   {
-    if( ctx.Source.TryGetComponent<PlayerController>(out PlayerController playerController))
+    if( ctx.Source.TryGetComponent<ClientShell>(out ClientShell clientShell))
     {
-      _registeredPlayers.Add( playerController ) ;
+      _connectedPlayers.Add( clientShell ) ;
+      clientShell.AssignSeat( (PlayerSelect) _connectedPlayers.Count ) ;
+      ctx.Source.transform.SetParent( clientLogicObject.transform ) ;
     }
 
     CheckScenarioBegin() ;
+  }
+
+  public void OnVesselSpawned(GameEventContext ctx)
+  {
+    if( ctx.Source.TryGetComponent<PlayerVessel>(out PlayerVessel playerVessel))
+    {
+      foreach( ClientShell playerShell in _connectedPlayers)
+      {
+        playerShell.AssignVessel( playerVessel ) ;
+      }
+
+      sceneBackdrop.SetActive( true ) ;
+      gameState.Value = GameState.Playing ;
+      GameEventSystem.ScenarioBegin.Invoke( new GameEventContext( gameObject ) ) ;
+    }
   }
 
   public void OnScenarioBegin(GameEventContext ctx)

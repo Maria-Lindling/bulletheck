@@ -85,6 +85,12 @@ public class BulletController : NetworkBehaviour, IEntityController
     Speed = speed ;
     _force = _source.GetComponent<IEntityController>().Force ;
   }
+
+  [ObserversRpc]
+  private void RealignSprite()
+  {
+    sprite.transform.LookAt( sprite.transform.position + Camera.main.transform.forward ) ;
+  } 
 #endregion 
 
 
@@ -102,7 +108,7 @@ public class BulletController : NetworkBehaviour, IEntityController
 
     goalVelocity = transform.forward ;
 
-    sprite.transform.LookAt( transform.position + Camera.main.transform.forward ) ;
+    RealignSprite() ;
   }
 
   private void FixedUpdate()

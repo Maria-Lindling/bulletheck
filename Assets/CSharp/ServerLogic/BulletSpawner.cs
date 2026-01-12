@@ -4,6 +4,8 @@ using System.Collections;
 
 public class BulletSpawner : NetworkBehaviour
 {
+  [SerializeField] private GameObject bulletQuarantineObject ;
+
   public void OnSpawnBullet(GameEventContext ctx)
   {
     StartCoroutine( SpawnBullet(
@@ -33,6 +35,8 @@ public class BulletSpawner : NetworkBehaviour
     GameObject bulletInstance = Instantiate( prefab, origin, Quaternion.LookRotation(heading,Vector3.up) ) ;
 
     bulletInstance.GetComponent<BulletController>().Initialize( source, speed ) ;
+
+    bulletInstance.transform.SetParent( bulletQuarantineObject.transform ) ;
     
     Spawn(bulletInstance) ;
 
