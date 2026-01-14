@@ -46,6 +46,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Enemy Chassis Low
+    uniqueID: 2720749609
+    locked: 0
+  - name: Enemy Hitbox
+    uniqueID: 3690441523
+    locked: 0
+  - name: Enemy Chassis High
+    uniqueID: 259772273
+    locked: 0
+  - name: Enemy Turret
+    uniqueID: 2040004219
+    locked: 0
   - name: Central-Frame
     uniqueID: 943899639
     locked: 0
