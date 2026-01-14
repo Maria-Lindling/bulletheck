@@ -62,7 +62,7 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   private void CheckScenarioBegin()
   {
-    if( _connectedPlayers.Count < 2 )
+    if( gameState.Value == GameState.WaitingForPlayers && _connectedPlayers.Count < 2 )
       return ;
     
     GameEventContext vesselCtx = new GameEventContextBuilder( gameObject )
@@ -111,21 +111,8 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   public void OnPauseMenu(GameEventContext ctx)
   {
-    //testPattern.Spawn(testPatternSpawnPoint,gameObject) ;
-
-    /**
     switch( gameState.Value )
     {
-      case GameState.WaitingForPlayers :
-        // DUMMY / TEST 
-        //gameState.Value = GameState.WaitingPaused ;
-        gameState.Value = GameState.Playing ;
-        break ;
-
-      case GameState.WaitingPaused :
-        gameState.Value = GameState.WaitingForPlayers ;
-        break ;
-
       case GameState.Playing :
         gameState.Value = GameState.Paused ;
         break ;
@@ -138,7 +125,6 @@ public class WorldManager : NetworkBehaviour, IEntityController
         // nothing
         break ;
     }
-    */
   }
 #endregion
 
@@ -203,6 +189,8 @@ public class WorldManager : NetworkBehaviour, IEntityController
     {
       TimeManager.OnTick += OnTick ;
     }
+
+    gameState.Value = GameState.WaitingForPlayers ;
   }
 #endregion
 

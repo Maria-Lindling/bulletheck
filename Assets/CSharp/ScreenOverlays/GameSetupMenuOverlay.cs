@@ -69,6 +69,9 @@ public class GameSetupMenuOverlay : MonoBehaviour
     _tugboat.SetPort( port ) ;
     _tugboat.StartConnection( true ) ;
 
+    _tugboat.SetClientAddress( "localhost" ) ;
+    _tugboat.StartConnection( false ) ;
+
     gameObject.SetActive(false) ;
   }
 
