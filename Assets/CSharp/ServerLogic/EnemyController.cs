@@ -161,6 +161,8 @@ public class EnemyController : NetworkBehaviour, IEntityController
       StartCoroutine( ShrinkAndDespawn() ) ;
     }
 
+    iFramesEnd = TimeManager.LocalTick + TimeManager.TimeToTicks( damageIFrameTime ) ;
+
     return true ;
   }
 #endregion

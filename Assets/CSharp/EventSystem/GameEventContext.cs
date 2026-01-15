@@ -138,11 +138,11 @@ public class GameEventContext
       value = ReadValue<T>() ;
       return true ;
     }
-    catch (ArgumentException e)
+    catch (ArgumentException)
     {
       //Debug.Log(e.Message) ;
     }
-    catch (IndexOutOfRangeException e)
+    catch (IndexOutOfRangeException)
     {
       //Debug.Log(e.Message) ;
     }
@@ -157,11 +157,11 @@ public class GameEventContext
       value = ReadValue<T>(index) ;
       return true ;
     }
-    catch (ArgumentException e)
+    catch (ArgumentException)
     {
       //Debug.Log(e.Message) ;
     }
-    catch (IndexOutOfRangeException e)
+    catch (IndexOutOfRangeException)
     {
       //Debug.Log(e.Message) ;
     }

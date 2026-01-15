@@ -9,10 +9,15 @@ using System;
 using System.Collections;
 using FishNet.Example.Scened;
 
+// main
 // TODO: add "retry level" button
 // TODO: add "fail and retry/exit" panel to game finish menu
 // TODO: finish game finish menu integration / logic
 // TODO: hook up game finish menu to php / database
+// misc
+// TODO: finishing game / open menu disables player input on vessel
+// TODO: populate leaderboard
+// TODO: alternate leaderboard view with "your score" for comparison
 [RequireComponent(typeof(GameDatabaseClient))]
 public class WorldManager : NetworkBehaviour, IEntityController
 {
@@ -30,9 +35,9 @@ public class WorldManager : NetworkBehaviour, IEntityController
   [Header("Motion & Parallax")]
   [SerializeField] private GameObject sceneBackdrop ;
   [SerializeField] private float verticalScrollSpeed = 0.3334f ;
-  [SerializeField] private float lookParallaxIntensity = 1.0f ;
+  //[SerializeField] private float lookParallaxIntensity = 1.0f ;
 
-  [Header("UI")]
+  //[Header("UI")]
   // [SerializeField] private GameObject sceneBackdrop ;
   // [SerializeField] private TMP_Text player1NameText ;
   // [SerializeField] private TMP_Text player2NameText ;
@@ -57,7 +62,7 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
 #region 
   private Queue<EncounterScriptableObject> _encountersQueue ;
-  private List<ClientShell> _connectedPlayers = new() ;
+  private readonly List<ClientShell> _connectedPlayers = new() ;
 #endregion
 
 
