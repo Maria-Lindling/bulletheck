@@ -2,51 +2,52 @@
 ## Project Checklist
 ### 1. Multiplayer
 - [x] Set up FishNet in the Unity Project
-- [ ] Host/Client-Connection is possible
-- [ ] Two instances can establish a stable connection
-- [ ] The NetworkManager is configured correctly
+- [x] Host/Client-Connection is possible
+- [x] Two instances can establish a stable connection
+- [x] The NetworkManager is configured correctly
 
 ### 2. Multiplayer
-- [ ] Top-Down movement
+- [x] Top-Down movement
   - [x] Player
   - [x] Bullet
-  - [ ] Enemy
-- [ ] Players are implemented as NetworkObjects with NetworkBehaviour
-- [ ] Ownership is correctly implemented (only a client's owned objects take that client's input)
-- [ ] Movement within the game is handled under server authority
+  - [x] Enemy
+- [x] Players are implemented as NetworkObjects with NetworkBehaviour
+- [x] Ownership is correctly implemented (only a client's owned objects take that client's input)
+- [x] Movement within the game is handled under server authority
 - [x] At least one SyncVar
 
 ### 3. Shooting & Bullet Hell mechanics
-- [ ] Network-capable projectile-system
-- [ ] At least two different bullet patterns
-- [ ] Projectiles are synchronized properly
-- [ ] Rate of fire and cooldown system present
-- [ ] Hit detection and damage functions correctly
+- [x] Network-capable projectile-system
+- [x] At least two different bullet patterns
+- [x] Projectiles are synchronized properly
+- [x] Rate of fire and cooldown system present
+- [x] Hit detection and damage functions correctly
 
 ### 4. Enemy-, Wave-, or Boss-System 
 - [ ] At least two different enemy-types
-- [ ] Enemies are spawned from server-side
-- [ ] Either
+- [x] Enemies are spawned from server-side
+- [x] Either
   - [ ] one Boss enemy
-  - [ ] a clearly defined wave-structure
-- [ ] Enemy- and Boss-bullets are consistently visible on both clients
+  - [x] a clearly defined wave-structure
+- [x] Enemy- and Boss-bullets are consistently visible on both clients
 
 ### 5. Health, Hits & Gamesequence
-- [ ] Players feature a health- or lives-system
-- [ ] Damage and Hits are correctly synchronized
-- [ ] Clear game-flow (Start ➡️ Game ➡️ Game Over / Victory ➡️ Endscreen or Restart
+- [x] Players feature a health- or lives-system
+- [x] Damage and Hits are correctly synchronized
+- [x] Clear game-flow (Start ➡️ Game ➡️ Game Over / Victory ➡️ Endscreen or Restart
 
 ### 6. HUD & Points
-- [ ] HUD features at least
-  - [ ] Health / Lives
-  - [ ] Score
+- [x] HUD features at least
+  - [x] Health / Lives
+  - [x] Score
 - [ ] Distribute points for kills and/or time survived
 - [ ] Score is synchronized and displayed correctly
 - [ ] history/listing of High Scores is maintained server-side via PHP & SQL
 
 ### 7. Bonus features
-- [ ] Scrolling background
+- [x] Scrolling background
   - [ ] With parallax effect
+- [x] Custom connection / game-setup menu
 - [ ] TBD/cont.
 
 ***
