@@ -9,6 +9,10 @@ using System;
 using System.Collections;
 using FishNet.Example.Scened;
 
+// TODO: look up what object pool is
+// TODO: add a victory condition and victory screen
+// TODO: add mechanics for accumulating score
+// TODO: add "retry level" button
 [RequireComponent(typeof(GameDatabaseClient))]
 public class WorldManager : NetworkBehaviour, IEntityController
 {
@@ -63,13 +67,20 @@ public class WorldManager : NetworkBehaviour, IEntityController
   private void CheckScenarioBegin()
   {
     if( gameState.Value == GameState.WaitingForPlayers && _connectedPlayers.Count < 2 )
+    {
+      
+      GameEventContextBuilder gCtxB = new( gameObject ) ;
+      gCtxB.AddValue<string>("Waiting for co-op partner.") ;
+      GameEventSystem.SetMessage.Invoke( gCtxB.Build() ) ;
+      GameEventSystem.ShowMessage.Invoke( new(gameObject) ) ;
       return ;
-    
+    }
     GameEventContext vesselCtx = new GameEventContextBuilder( gameObject )
       .AddValue<GameObject>(playerVessel)
       .AddValue<Vector3>(playerSpawnPoint.transform.position)
       .Build() ;
 
+    GameEventSystem.HideMessage.Invoke( new(gameObject) ) ;
     GameEventSystem.SpawnVessel.Invoke( vesselCtx ) ;
   }
 
@@ -99,6 +110,18 @@ public class WorldManager : NetworkBehaviour, IEntityController
       sceneBackdrop.SetActive( true ) ;
       gameState.Value = GameState.Playing ;
       GameEventSystem.ScenarioBegin.Invoke( new GameEventContext( gameObject ) ) ;
+    }
+  }
+
+  // bool value = defeated? true/false
+  public void OnVesselDespawned(GameEventContext ctx)
+  {
+    if( ctx.TryReadValue<bool>(out bool value) && value == true )
+    {
+      GameEventContextBuilder gCtxB = new( gameObject ) ;
+      gCtxB.AddValue<string>( "Bad luck!\n\nTry Again?" ) ;
+      GameEventSystem.SetMessage.Invoke( gCtxB.Build() ) ;
+      GameEventSystem.ShowMessage.Invoke( new(gameObject) ) ;
     }
   }
 

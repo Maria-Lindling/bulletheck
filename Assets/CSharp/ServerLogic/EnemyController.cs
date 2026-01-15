@@ -74,7 +74,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
       transform.localScale = Vector3.one * (1.00f + i * 0.05f) ;
     }
 
-    for( int i = 0; i < 24 ; i++ )
+    for( int i = 0; i < 25 ; i++ )
     {
       yield return wait ;
       transform.localScale = Vector3.one * (1.20f - i * 0.05f) ;
@@ -132,7 +132,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
 #region IEntityController
   public bool TryDamageEntity(float damage) 
   {
-    if( damage <= 0.0f && TimeManager.LocalTick <= iFramesEnd && !_isDespawning )
+    if( damage <= 0.0f || TimeManager.LocalTick < iFramesEnd || _isDespawning )
       return false ;
 
     hitPoints -= damage ;

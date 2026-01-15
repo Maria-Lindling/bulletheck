@@ -183,8 +183,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 2040004219
-  m_SortingLayer: 4
+  m_SortingLayerID: 259772273
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: -8526760998437897237, guid: 5749debd12587264d9e7bd360bbecd98, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -416,7 +416,7 @@ GameObject:
   - component: {fileID: 1442115086427115791}
   - component: {fileID: -7333704370108518888}
   m_Layer: 0
-  m_Name: BasicEnemy_Eight
+  m_Name: BasicEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -463,7 +463,7 @@ MonoBehaviour:
   hurtSprite: {fileID: 476470359678093293}
   velocity: 0.75
   primaryWeapon:
-    weapon: {fileID: 11400000, guid: 309f8e17c9ee1c64fb58c3303d86651c, type: 2}
+    weapon: {fileID: 11400000, guid: e2b362d0345074c4c84c93f6e5ca3ba6, type: 2}
   primaryWeaponOrigin: {fileID: 7421554275524909189}
 --- !u!114 &-5323469652496290292
 MonoBehaviour:
@@ -511,7 +511,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 65535
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 8927469037358820985
+  <AssetPathHash>k__BackingField: 3777646948359832482
   SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}

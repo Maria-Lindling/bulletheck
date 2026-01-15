@@ -83,6 +83,12 @@ public class BulletController : NetworkBehaviour, IEntityController
   {
     _source = source ;
     Speed = speed ;
+    
+    if( _source == null )
+    {
+      _force = ForceSelection.None ;
+      return ;
+    }
     _force = _source.GetComponent<IEntityController>().Force ;
   }
 

@@ -203,6 +203,13 @@ public class GameEventContext
   /// <param name="status">The state in which the context is initialized.</param>
   public GameEventContext(GameObject source)
   {
+    if( source == null )
+    {
+      _evtValuePlayerSelect = PlayerSelect.None ;
+      Source = default ;
+      return ;
+    }
+    
     Source = source ;
 
     if( Source.TryGetComponent(out PlayerVessel player) )

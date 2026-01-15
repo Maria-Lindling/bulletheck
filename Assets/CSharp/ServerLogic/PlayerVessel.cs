@@ -8,9 +8,20 @@ using UnityEngine.SocialPlatforms.Impl;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using FishNet.Connection;
+using GameKit.Dependencies.Utilities;
 
 public class PlayerVessel : NetworkBehaviour, IEntityController
 {
+#region Colors
+  private readonly List<(Color Color,float Percentage)> _healthThresholds = new () {
+    ( Color.cyan,   1.00f ),
+    ( Color.green,  0.85f ),
+    ( Color.yellow, 0.65f ),
+    ( Color.red,    0.15f ),
+    ( Color.black,  0.00f ),
+  } ;
+#endregion
+
 #region SyncVar
   private readonly SyncVar<float> syncHtPoints = new() ;
   private readonly SyncVar<bool> isReady = new() ;
@@ -29,6 +40,7 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
   private uint _primaryWeaponCooldownEnd = 0 ;
   private uint _secondaryWeaponCooldownEnd = 0 ;
   private uint _turretWeaponCooldownEnd = 0 ;
+  private bool _isDespawning = false ;
 #endregion
 
 
@@ -41,10 +53,9 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
 
 #region Unity Editor
   [SerializeField] private ForceSelection force = ForceSelection.Player ;
-  [SerializeField] private float hitPoints = 100.0f ;
-  [SerializeField] private float damageIFrameTime = 1.5f ;
+  [SerializeField] private VesselStats stats ;
   [SerializeField] private SpriteRenderer hurtSprite ;
-  [SerializeField] private float moveSpeed = 5.0f ;
+  [SerializeField] private GameObject healthBar ;
   [SerializeField] private float minX = -8.75f ;
   [SerializeField] private float maxX = 8.75f ;
   [SerializeField] private float minY = -4.5f ;
@@ -108,12 +119,36 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
   {
     if( next >= prev )
       return ;
+
+    float hitPercent = next / stats.HitPoints ; 
+    for( int i = 0 ; i < _healthThresholds.Count - 1 ; i++ )
+    {
+      if( hitPercent <= _healthThresholds[i].Percentage )
+      {
+        float healthTierSize = _healthThresholds[i].Percentage - _healthThresholds[i+1].Percentage ;
+        float healthWithinTier = (hitPercent - _healthThresholds[i+1].Percentage) / healthTierSize ;
+        float missingHealthWithinTier = 1.0f - healthWithinTier ;
+
+        healthBar.GetComponent<SpriteRenderer>().material.color = (
+          _healthThresholds[i].Color   * healthWithinTier +
+          _healthThresholds[i+1].Color * missingHealthWithinTier
+        ) ;
+
+        healthBar.transform.SetScale( new Vector3( Mathf.Clamp( hitPercent, 0.0f, 1.0f ), 1.0f, 1.0f ) ) ;
+      }
+    }
     
     if( TimeManager.LocalTick > damageFlashEnd )
-      StartCoroutine( DamageFlash(1.5d) ) ;
+      StartCoroutine( DamageFlash( stats.IFrames ) ) ;
+
+    if( !isServer )
+      return ;
 
     if( TimeManager.LocalTick > iFramesEnd )
-      iFramesEnd = TimeManager.LocalTick + TimeManager.TimeToTicks( damageIFrameTime ) ;
+      iFramesEnd = TimeManager.LocalTick + TimeManager.TimeToTicks( stats.IFrames ) ;
+
+    if( next <= 0.0f )
+      StartCoroutine( ShrinkAndDespawn() ) ;
   }
 
   private void OnMoveChanged(Vector3 prev, Vector3 next, bool isServer)
@@ -121,7 +156,7 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
     if( !isServer )
       return ;
 
-    _currentMovement = moveSpeed * Time.deltaTime * next ;
+    _currentMovement = stats.MoveSpeed * Time.deltaTime * next ;
   }
 
   private void OnLookChanged(Vector3 prev, Vector3 next, bool isServer)
@@ -185,6 +220,34 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
     yield return null ;
     hurtSprite.color = initialColor ;
   }
+
+  private IEnumerator ShrinkAndDespawn()
+  {
+    _isDespawning = true ;
+
+    WaitForEndOfFrame wait = new() ;
+
+    for( int i = 0; i < 4 ; i++ )
+    {
+      yield return wait ;
+      transform.localScale = Vector3.one * (1.00f + i * 0.05f) ;
+    }
+
+    for( int i = 0; i < 25 ; i++ )
+    {
+      yield return wait ;
+      transform.localScale = Vector3.one * (1.20f - i * 0.05f) ;
+    }
+
+    GameEventContext defeatCtx = new GameEventContextBuilder( default )
+      .AddValue<bool>( syncHtPoints.Value <= 0.0f )
+      .Build();
+    
+    GameEventSystem.VesselDespawned.Invoke( defeatCtx ) ;
+
+    Despawn( DespawnType.Destroy ) ;
+    Destroy( gameObject ) ;
+  }
 #endregion
 
 
@@ -199,7 +262,7 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
     syncAtk2.OnChange     -= OnAtk2Changed ;
     syncAtk3.OnChange     -= OnAtk3Changed ;
 
-    if( IsOwner )
+    if( IsServerInitialized )
     {
       if( TimeManager != null )
       {
@@ -225,6 +288,8 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
       {
         TimeManager.OnTick += OnTick ;
       }
+
+      syncHtPoints.Value = stats.HitPoints ;
     }
   }
 #endregion
@@ -253,7 +318,7 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
 #region IEntityController
   public bool TryDamageEntity(float damage)
   {
-    if( damage <= 0.0f && TimeManager.LocalTick <= iFramesEnd )
+    if( damage <= 0.0f || TimeManager.LocalTick < iFramesEnd || _isDespawning )
       return false ;
 
     syncHtPoints.Value -= damage ;

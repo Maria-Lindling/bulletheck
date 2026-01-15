@@ -75,7 +75,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1320319497
-  m_SortingLayer: 9
+  m_SortingLayer: 13
   m_SortingOrder: 0
   m_Sprite: {fileID: 5653094024282777339, guid: 4099804806f6d924a880a6d985de03d7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -371,7 +371,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 1734058360111172477
+  <AssetPathHash>k__BackingField: 17592614083063089846
   SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}

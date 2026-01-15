@@ -10,6 +10,12 @@ internal class GameEventsConfigMeta
   [Header("Client Status")]
   [SerializeField] internal UnityEvent<GameEventContext> clientConnect ;
   [SerializeField] internal UnityEvent<GameEventContext> clientDisconnect ;
+
+  [Header("Info Status")]
+  [SerializeField] internal UnityEvent<GameEventContext> hideMessage ;
+  [SerializeField] internal UnityEvent<GameEventContext> clearMessage ;
+  [SerializeField] internal UnityEvent<GameEventContext> setMessage ;
+  [SerializeField] internal UnityEvent<GameEventContext> showMessage ;
   
   [Header("Scenario Status")]
   [SerializeField] internal UnityEvent<GameEventContext> scenarioBegin ;

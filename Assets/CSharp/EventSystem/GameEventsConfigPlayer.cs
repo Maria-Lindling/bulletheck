@@ -10,6 +10,7 @@ internal class GameEventsConfigPlayer
   [SerializeField] internal UnityEvent<GameEventContext> playerRegister ;
   [SerializeField] internal UnityEvent<GameEventContext> spawnVessel ;
   [SerializeField] internal UnityEvent<GameEventContext> vesselSpawned ;
+  [SerializeField] internal UnityEvent<GameEventContext> vesselDespawned ;
   
   [Header("Scenario Actions")]
   [SerializeField] internal UnityEvent<GameEventContext> spawnBullet ;
