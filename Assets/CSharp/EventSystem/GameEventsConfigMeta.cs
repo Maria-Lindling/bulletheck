@@ -20,7 +20,9 @@ internal class GameEventsConfigMeta
   [Header("Scenario Status")]
   [SerializeField] internal UnityEvent<GameEventContext> scenarioBegin ;
   [SerializeField] internal UnityEvent<GameEventContext> scenarioEnd ;
+  [SerializeField] internal UnityEvent<GameEventContext> encounterEnd ;
   [SerializeField] internal UnityEvent<GameEventContext> pauseMenu ;
   
   [SerializeField] internal UnityEvent<GameEventContext> spawnEnemy ;
+  [SerializeField] internal UnityEvent<GameEventContext> enemyDefeated ;
 }

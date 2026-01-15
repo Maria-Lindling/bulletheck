@@ -4,13 +4,13 @@ using FishNet.Demo.HashGrid;
 using UnityEngine;
 
 [Serializable]
-internal class EncounterEntry
+public class EncounterEntry
 {
   [SerializeField] float spawnDelay ;
   [SerializeField] int spawnPoint ;
   [SerializeField] GameObject enemyPrefab ;
 
-  internal float Delay => spawnDelay ;
-  internal int SpawnPoint => spawnPoint ;
-  internal GameObject Prefab => enemyPrefab ;
+  public float Delay => spawnDelay ;
+  public int SpawnPoint => spawnPoint ;
+  public GameObject Prefab => enemyPrefab ;
 }

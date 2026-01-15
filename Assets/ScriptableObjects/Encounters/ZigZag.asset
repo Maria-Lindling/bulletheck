@@ -40,3 +40,4 @@ MonoBehaviour:
   - spawnDelay: 6.334
     spawnPoint: 0
     enemyPrefab: {fileID: 8802701425587176712, guid: 2e14bd01809b34245a4e964e1e8dea14, type: 3}
+  extraDelay: 34.667

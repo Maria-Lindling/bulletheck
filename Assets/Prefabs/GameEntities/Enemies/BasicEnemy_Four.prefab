@@ -273,7 +273,7 @@ SpriteRenderer:
   m_SortingLayerID: -1574217687
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1129854135900092087, guid: 219ce2cb8f534b54691470214b4bbe75, type: 3}
+  m_Sprite: {fileID: -5970326261275987734, guid: 53037326b97b12d4ab0aff24f9341bf1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -458,6 +458,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -5323469652496290292}
   _networkObjectCache: {fileID: 0}
   force: 1
+  scoreValue: 3500
   hitPoints: 100
   damageIFrameTime: 0
   hurtSprite: {fileID: 476470359678093293}

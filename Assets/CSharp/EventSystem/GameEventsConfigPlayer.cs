@@ -15,4 +15,5 @@ internal class GameEventsConfigPlayer
   [Header("Scenario Actions")]
   [SerializeField] internal UnityEvent<GameEventContext> spawnBullet ;
   [SerializeField] internal UnityEvent<GameEventContext> scorePoint ;
+  [SerializeField] internal UnityEvent<GameEventContext> playerTakeDamage ;
 }

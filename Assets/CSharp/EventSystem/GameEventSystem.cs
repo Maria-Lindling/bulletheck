@@ -12,6 +12,7 @@ public class GameEventSystem : NetworkBehaviour
   [SerializeField] private GameEventsConfigMeta metaEvents ;
 #endregion
 
+  public static UnityEvent<GameEventContext> PlayerTakeDamage { get; private set ; }
   public static UnityEvent<GameEventContext> ScorePoint { get; private set ; }
   public static UnityEvent<GameEventContext> PlayerRegister { get; private set ; }
 
@@ -21,12 +22,15 @@ public class GameEventSystem : NetworkBehaviour
 
   public static UnityEvent<GameEventContext> SpawnBullet { get; private set ; }
   public static UnityEvent<GameEventContext> SpawnEnemy { get; private set ; }
+  public static UnityEvent<GameEventContext> EnemyDefeated { get; private set ; }
 
   public static UnityEvent<GameEventContext> ClientConnect { get; private set ; }
   public static UnityEvent<GameEventContext> ClientDisconnect { get; private set ; }
 
   public static UnityEvent<GameEventContext> PauseMenu { get; private set ; }
   public static UnityEvent<GameEventContext> ScenarioBegin { get; private set ; }
+  public static UnityEvent<GameEventContext> EncounterEnd { get; private set ; }
+  public static UnityEvent<GameEventContext> ScenarioEnd { get; private set ; }
 
   public static UnityEvent<GameEventContext> HideMessage { get; private set ; }
   public static UnityEvent<GameEventContext> ClearMessage { get; private set ; }
@@ -38,18 +42,25 @@ public class GameEventSystem : NetworkBehaviour
     if( !IsServerInitialized )
       return ;
     
-    ScorePoint      = playerEvents.scorePoint ;
-    PlayerRegister  = playerEvents.playerRegister ;
-    SpawnVessel     = playerEvents.spawnVessel ;
-    VesselSpawned   = playerEvents.vesselSpawned ;
-    VesselDespawned = playerEvents.vesselDespawned ;
-    SpawnBullet     = playerEvents.spawnBullet ;
+    PlayerTakeDamage  = playerEvents.playerTakeDamage ;
+    ScorePoint        = playerEvents.scorePoint ;
+    PlayerRegister    = playerEvents.playerRegister ;
+    SpawnVessel       = playerEvents.spawnVessel ;
+    VesselSpawned     = playerEvents.vesselSpawned ;
+    VesselDespawned   = playerEvents.vesselDespawned ;
+    SpawnBullet       = playerEvents.spawnBullet ;
     
     ClientConnect     = metaEvents.clientConnect ;
     ClientDisconnect  = metaEvents.clientDisconnect ;
+
     SpawnEnemy        = metaEvents.spawnEnemy ;
+    EnemyDefeated     = metaEvents.enemyDefeated ;
+
     PauseMenu         = metaEvents.pauseMenu ;
     ScenarioBegin     = metaEvents.scenarioBegin ;
+    ScenarioEnd       = metaEvents.scenarioEnd ;
+    EncounterEnd      = metaEvents.encounterEnd ;
+
     HideMessage       = metaEvents.hideMessage ;
     ClearMessage      = metaEvents.clearMessage ;
     SetMessage        = metaEvents.setMessage ;

@@ -10,12 +10,14 @@ public class ScoreDisplay : NetworkBehaviour
   private const string PLACEHOLDER_LABEL = "[display label]" ;
   private const string PLACEHOLDER_VALUE = "[display value]" ;
   private const string DEFAULT_NUMBER_PATTERN = "#### 0000 0000" ;
+  private const int FLASH_TICKS = 6 ;
+  private readonly Color BASE_COLOR = Color.white ;
+  private readonly Color FLASH_COLOR = Color.yellow ;
 #endregion
 
 
 #region Unity Editor
   [Header("Presets")]
-  [SerializeField] private PlayerSelect linkedPlayer = PlayerSelect.None ;
   [SerializeField] private string defaultValue ;
   [SerializeField] private bool isNumber = true ;
 
@@ -26,18 +28,18 @@ public class ScoreDisplay : NetworkBehaviour
 
 
 #region SyncVar
-  private readonly SyncVar<PlayerSelect> LinkedPlayer = new() ;
   private readonly SyncVar<string> Label = new() ;
   private readonly SyncVar<string> Value = new() ;
 #endregion
 
 
+#region 
+  private bool _valueFlashLock = false ;
+#endregion
+
 #region GameEvents
   public void OnValueChange(GameEventContext ctx)
-  {
-    if( ctx.ReadValue<PlayerSelect>() != LinkedPlayer.Value )
-      return ;
-    
+  {    
     if( isNumber )
     {
       Value.Value = ctx.ReadValue<int>().ToString( ctx.TryReadValue(out string pattern) ? pattern : DEFAULT_NUMBER_PATTERN) ;
@@ -50,36 +52,7 @@ public class ScoreDisplay : NetworkBehaviour
 #endregion
 
 
-#region Show/Hide
-  public void Show()
-  {
-    labelText.enabled = true ;
-    valueText.enabled = true ;
-  }
-
-  public void Hide()
-  {
-    labelText.enabled = false ;
-    valueText.enabled = false ;
-  }
-#endregion
-
-
 #region SyncEvent
-  private void OnLinkedPlayerChange(PlayerSelect prev, PlayerSelect next, bool asServer)
-  {
-    if( next == PlayerSelect.None )
-    {
-      Hide() ;
-      Value.Value = defaultValue ;
-      return ;
-    }
-    else
-    {
-      
-    }
-  }
-
   private void OnLabelChange(string prev, string next, bool asServer)
   {
     labelText.text = next ;
@@ -88,6 +61,24 @@ public class ScoreDisplay : NetworkBehaviour
   private void OnValueChange(string prev, string next, bool asServer)
   {
     valueText.text = next ;
+    StartCoroutine( FlashValue() ) ;
+  }
+#endregion
+
+
+#region Animation
+  private IEnumerator FlashValue()
+  {
+    yield return new WaitUntil( () => !_valueFlashLock ) ;
+    _valueFlashLock = true ;
+
+    valueText.color = FLASH_COLOR ;
+
+    yield return new WaitForSeconds( (float)TimeManager.TicksToTime(FLASH_TICKS) ) ;
+
+    valueText.color = BASE_COLOR ;
+
+    _valueFlashLock = false ;
   }
 #endregion
 
@@ -95,31 +86,24 @@ public class ScoreDisplay : NetworkBehaviour
 #region MonoBehavior
 private void OnDisable()
   {
-    LinkedPlayer.OnChange -= OnLinkedPlayerChange ;
     Label.OnChange -= OnLabelChange ;
     Value.OnChange -= OnValueChange ;
-    Hide() ;
   }
 
   private IEnumerator DelayedInitialization()
   {
-    LinkedPlayer.OnChange += OnLinkedPlayerChange ;
     Label.OnChange += OnLabelChange ;
     Value.OnChange += OnValueChange ;
 
     yield return null ;
     if( IsServerInitialized )
     {
-      LinkedPlayer.Value = linkedPlayer ;
       Value.Value = defaultValue ;
     }
-    
-    Show() ;
   }
 
   private void Start()
   {
-    Hide() ;
     StartCoroutine( DelayedInitialization() ) ;
   }
 #endregion

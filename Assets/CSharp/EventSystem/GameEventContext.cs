@@ -140,7 +140,11 @@ public class GameEventContext
     }
     catch (ArgumentException e)
     {
-      Debug.Log(e.Message) ;
+      //Debug.Log(e.Message) ;
+    }
+    catch (IndexOutOfRangeException e)
+    {
+      //Debug.Log(e.Message) ;
     }
     value = default ;
     return false ;
@@ -155,7 +159,11 @@ public class GameEventContext
     }
     catch (ArgumentException e)
     {
-      Debug.Log(e.Message) ;
+      //Debug.Log(e.Message) ;
+    }
+    catch (IndexOutOfRangeException e)
+    {
+      //Debug.Log(e.Message) ;
     }
     value = default ;
     return false ;

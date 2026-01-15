@@ -323,6 +323,8 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
 
     syncHtPoints.Value -= damage ;
 
+    GameEventSystem.PlayerTakeDamage.Invoke( new( gameObject ) ) ;
+
     return true ;
   }
 #endregion

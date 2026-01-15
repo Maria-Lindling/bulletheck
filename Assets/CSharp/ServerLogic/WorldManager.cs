@@ -9,10 +9,10 @@ using System;
 using System.Collections;
 using FishNet.Example.Scened;
 
-// TODO: look up what object pool is
-// TODO: add a victory condition and victory screen
-// TODO: add mechanics for accumulating score
 // TODO: add "retry level" button
+// TODO: add "fail and retry/exit" panel to game finish menu
+// TODO: finish game finish menu integration / logic
+// TODO: hook up game finish menu to php / database
 [RequireComponent(typeof(GameDatabaseClient))]
 public class WorldManager : NetworkBehaviour, IEntityController
 {
@@ -24,7 +24,8 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   [Header("Encounter")]
   [SerializeField] private List<GameObject> enemySpawnPoints ;
-  [SerializeField] private EncounterScriptableObject encounter ;
+  [SerializeField] private List<EncounterScriptableObject> encounters ;
+  [SerializeField] private int damagePenalty = 5000 ;
 
   [Header("Motion & Parallax")]
   [SerializeField] private GameObject sceneBackdrop ;
@@ -42,8 +43,7 @@ public class WorldManager : NetworkBehaviour, IEntityController
   public readonly SyncVar<string> player2Name = new() ;
 
   [Header("Score")]
-  private readonly SyncVar<int> scoreP1 = new() ;
-  private readonly SyncVar<int> scoreP2 = new() ;
+  private readonly SyncVar<int> syncPlayerScore = new() ;
 
   [Header("Game")]
   private readonly SyncVar<GameState> gameState = new() ;
@@ -56,8 +56,10 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
 
 #region 
+  private Queue<EncounterScriptableObject> _encountersQueue ;
   private List<ClientShell> _connectedPlayers = new() ;
 #endregion
+
 
 #region 
   public ForceSelection Force => ForceSelection.None ;
@@ -127,13 +129,23 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   public void OnScenarioBegin(GameEventContext ctx)
   {
-    Queue<EncounterEntry> encounterQueue = new(encounter.Data) ;
+    _encountersQueue = new ( encounters ) ;
 
-    StartCoroutine( RollOutEncounter(encounterQueue) ) ;
+    gameState.Value = GameState.Playing ;
+
+    StartCoroutine( RollOutEncounters() ) ;
+  }
+
+  public void OnEncounterEnd(GameEventContext ctx)
+  {
+    gameState.Value = GameState.Finished ;
   }
 
   public void OnPauseMenu(GameEventContext ctx)
   {
+    // DEBUG: cheat victory
+    GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(14069).Build() ) ;
+
     switch( gameState.Value )
     {
       case GameState.Playing :
@@ -149,13 +161,80 @@ public class WorldManager : NetworkBehaviour, IEntityController
         break ;
     }
   }
+
+  public void OnPlayerTakeDamage( GameEventContext ctx )
+  {
+    if( gameState.Value != GameState.Playing )
+      return ;
+
+    syncPlayerScore.Value = Math.Max( syncPlayerScore.Value - damagePenalty, 0 ) ;
+  }
+
+  public void OnEnemyDefeated( GameEventContext ctx )
+  {
+    if( gameState.Value != GameState.Playing )
+      return ;
+
+    if( ctx.TryReadValue<int>(out int value) )
+    {
+      syncPlayerScore.Value += value ;
+    }
+  }
+#endregion
+
+
+#region 
+  private void OnScoreChange(int prev, int next, bool isServer)
+  {
+    GameEventSystem.ScorePoint.Invoke(
+      new GameEventContextBuilder( gameObject )
+        .AddValue<int>( next )
+        .Build()
+    ) ;
+  }
+
+  private void OnGameStateChange(GameState prev, GameState next, bool isServer)
+  {
+    switch( next )
+    {
+      case GameState.Playing :
+        Time.timeScale = 1.0f ;
+        break ;
+
+      case GameState.Paused :
+        Time.timeScale = 0.0f ;
+        break ;
+      
+      case GameState.Finished :
+        // nothing
+        break ;
+    }
+  }
 #endregion
 
 
 #region Encounter
+  private IEnumerator RollOutEncounters()
+  {
+    while( _encountersQueue.Count > 0 && gameState.Value == GameState.Playing )
+    {
+      EncounterScriptableObject nextEncounter = _encountersQueue.Dequeue() ;
+
+      Queue<EncounterEntry> encounterQueue = new (nextEncounter.Data) ;
+
+      StartCoroutine( RollOutEncounter(encounterQueue) ) ;
+      
+      if( gameState.Value == GameState.Playing )
+        yield return new WaitForSeconds( nextEncounter.Duration ) ;
+    }
+
+    if( gameState.Value == GameState.Playing )
+      GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(syncPlayerScore.Value).Build() ) ;
+  }
+
   private IEnumerator RollOutEncounter(Queue<EncounterEntry> encounterQueue)
   {
-    while( encounterQueue.Count > 0 )
+    while( encounterQueue.Count > 0 && gameState.Value == GameState.Playing )
     {
       EncounterEntry entry = encounterQueue.Dequeue() ;
       yield return new WaitForSeconds(entry.Delay) ;
@@ -208,11 +287,15 @@ public class WorldManager : NetworkBehaviour, IEntityController
   {
     base.OnStartServer() ;
 
+    syncPlayerScore.OnChange += OnScoreChange ;
+    gameState.OnChange       += OnGameStateChange ;
+
     if( TimeManager != null )
     {
       TimeManager.OnTick += OnTick ;
     }
 
+    syncPlayerScore.Value = 0 ;
     gameState.Value = GameState.WaitingForPlayers ;
   }
 #endregion

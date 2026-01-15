@@ -273,7 +273,7 @@ SpriteRenderer:
   m_SortingLayerID: -1574217687
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1129854135900092087, guid: 219ce2cb8f534b54691470214b4bbe75, type: 3}
+  m_Sprite: {fileID: 971837786223135054, guid: b2d4d328b78b7af4fb397b76689edd62, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -416,7 +416,7 @@ GameObject:
   - component: {fileID: 1442115086427115791}
   - component: {fileID: -7333704370108518888}
   m_Layer: 0
-  m_Name: BasicEnemy
+  m_Name: BasicEnemy_EliteEight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -454,11 +454,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5eb8c093b030564fa2f386b2ca0ec2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -5323469652496290292}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -5323469652496290292}
   force: 1
-  hitPoints: 100
+  scoreValue: 3500
+  hitPoints: 200
   damageIFrameTime: 0
   hurtSprite: {fileID: 476470359678093293}
   velocity: 0.75
@@ -483,7 +484,9 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
-  NetworkBehaviours: []
+  NetworkBehaviours:
+  - {fileID: 133204268019150004}
+  - {fileID: -7333704370108518888}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -494,7 +497,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: 0
+  _initializedTimestamp: -8584331255032925270
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -509,15 +512,15 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 2
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 3777646948359832482
+  <AssetPathHash>k__BackingField: 13028804230675474590
   SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    Scale: {x: 0, y: 0, z: 0}
-    IsValid: 0
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Scale: {x: 1, y: 1, z: 1}
+    IsValid: 1
 --- !u!114 &1442115086427115791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,9 +552,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: -5323469652496290292}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -5323469652496290292}
   _componentConfiguration: 0
   _synchronizeParent: 0
   _packing:

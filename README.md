@@ -34,7 +34,7 @@
 ### 5. Health, Hits & Gamesequence
 - [x] Players feature a health- or lives-system
 - [x] Damage and Hits are correctly synchronized
-- [x] Clear game-flow (Start ➡️ Game ➡️ Game Over / Victory ➡️ Endscreen or Restart
+- [x] Clear game-flow (Start ➡️ Game ➡️ Game Over / Victory ➡️ Endscreen or Restart)
 
 ### 6. HUD & Points
 - [x] HUD features at least

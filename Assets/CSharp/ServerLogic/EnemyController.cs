@@ -8,6 +8,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
 
 #region Unity Editor
   [SerializeField] private ForceSelection force = ForceSelection.Enemy ;
+  [SerializeField] private int scoreValue = 3500 ;
   [SerializeField] private float hitPoints = 100.0f ;
   [SerializeField] private float damageIFrameTime = 0.0f ;
   [SerializeField] private SpriteRenderer hurtSprite ;
@@ -15,7 +16,10 @@ public class EnemyController : NetworkBehaviour, IEntityController
 
   [SerializeField] private WeaponInfo primaryWeapon ;
   [SerializeField] private Transform primaryWeaponOrigin ;
+#endregion
 
+
+#region
   private uint weaponCooldownEnd = 0 ;
   private uint iFramesEnd = 0 ;
   private uint damageFlashEnd = 0 ;
@@ -54,14 +58,19 @@ public class EnemyController : NetworkBehaviour, IEntityController
     Color initialColor = hurtSprite.color ;
     while( TimeManager.LocalTick < damageFlashEnd )
     {
-      hurtSprite.color = Color.white ;
+      ReColorHurtSprite( Color.white ) ;
       yield return new WaitForSeconds( (float)TimeManager.TicksToTime(3) ) ;
 
-      hurtSprite.color = Color.black ;
+      ReColorHurtSprite( Color.black ) ;
       yield return new WaitForSeconds( (float)TimeManager.TicksToTime(3) ) ;
     }
     yield return null ;
-    hurtSprite.color = initialColor ;
+    ReColorHurtSprite( initialColor ) ;
+  }
+  [ObserversRpc]
+  private void ReColorHurtSprite(Color color)
+  {
+    hurtSprite.color = color ;
   }
 
   private IEnumerator ShrinkAndDespawn()
@@ -115,6 +124,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
   }
 #endregion
 
+
 #region MonoBehavior
   private void Start()
   {
@@ -143,6 +153,11 @@ public class EnemyController : NetworkBehaviour, IEntityController
     if( hitPoints <= 0.0f )
     {
       _isDespawning = true ;
+      GameEventSystem.EnemyDefeated.Invoke(
+        new GameEventContextBuilder( default )
+          .AddValue<int>( scoreValue )
+          .Build()
+      ) ;
       StartCoroutine( ShrinkAndDespawn() ) ;
     }
 
