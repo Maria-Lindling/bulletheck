@@ -36,7 +36,7 @@ public class BulletSpawner : NetworkBehaviour
 
     bulletInstance.GetComponent<BulletController>().Initialize( source, speed ) ;
 
-    bulletInstance.transform.SetParent( bulletQuarantineObject.transform ) ;
+    bulletInstance.GetComponent<NetworkObject>().SetParent( bulletQuarantineObject.GetComponent<NetworkObject>() ) ;
     
     Spawn(bulletInstance) ;
 

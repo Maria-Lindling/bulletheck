@@ -8,6 +8,8 @@ using FishNet.Demo.AdditiveScenes;
 using System;
 using System.Collections;
 using FishNet.Example.Scened;
+using System.Linq;
+using FishNet.Connection;
 
 // main
 // TODO: add "retry level" button
@@ -35,7 +37,9 @@ public class WorldManager : NetworkBehaviour, IEntityController
   [Header("Motion & Parallax")]
   [SerializeField] private GameObject sceneBackdrop ;
   [SerializeField] private float verticalScrollSpeed = 0.3334f ;
-  //[SerializeField] private float lookParallaxIntensity = 1.0f ;
+
+  [Header("Menus")]
+  [SerializeField] private GameObject gameFinishMenuPrefab ;
 
   //[Header("UI")]
   // [SerializeField] private GameObject sceneBackdrop ;
@@ -55,18 +59,15 @@ public class WorldManager : NetworkBehaviour, IEntityController
 #endregion
 
 
-#region db
-  private GameDatabaseClient _gameDatabaseClient ; 
-#endregion
-
-
 #region 
+  private GameFinishMenuOverlay _gameFinishMenu ;
   private Queue<EncounterScriptableObject> _encountersQueue ;
   private readonly List<ClientShell> _connectedPlayers = new() ;
 #endregion
 
 
-#region 
+#region
+  public static PlayerSelect LocalPlayer { get ; private set; } = PlayerSelect.None ;
   public ForceSelection Force => ForceSelection.None ;
 #endregion
 
@@ -99,10 +100,16 @@ public class WorldManager : NetworkBehaviour, IEntityController
     {
       _connectedPlayers.Add( clientShell ) ;
       clientShell.AssignSeat( (PlayerSelect) _connectedPlayers.Count ) ;
-      ctx.Source.transform.SetParent( clientLogicObject.transform ) ;
+      ctx.Source.GetComponent<NetworkObject>().SetParent( clientLogicObject.GetComponent<NetworkObject>() ) ;
+      SetLocalPlayer(clientShell.Owner,clientShell.Seat) ;
     }
 
     CheckScenarioBegin() ;
+  }
+  [TargetRpc]
+  private void SetLocalPlayer(NetworkConnection conn, PlayerSelect playerSelect)
+  {
+    LocalPlayer = playerSelect ;
   }
 
   public void OnVesselSpawned(GameEventContext ctx)
@@ -144,12 +151,14 @@ public class WorldManager : NetworkBehaviour, IEntityController
   public void OnEncounterEnd(GameEventContext ctx)
   {
     gameState.Value = GameState.Finished ;
+    _gameFinishMenu.OnEncounterEnd( ctx ) ;
   }
 
   public void OnPauseMenu(GameEventContext ctx)
   {
     // DEBUG: cheat victory
-    GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(14069).Build() ) ;
+    if( gameState.Value == GameState.Playing )
+      GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(14069).Build() ) ;
 
     switch( gameState.Value )
     {
@@ -213,6 +222,14 @@ public class WorldManager : NetworkBehaviour, IEntityController
       case GameState.Finished :
         // nothing
         break ;
+    }
+  }
+
+  public void OnSwitchInputMode(GameEventContext ctx)
+  {
+    foreach(ClientShell player in _connectedPlayers)
+    {
+      player.SwitchInputMode() ;
     }
   }
 #endregion
@@ -302,6 +319,10 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
     syncPlayerScore.Value = 0 ;
     gameState.Value = GameState.WaitingForPlayers ;
+
+    GameObject gameFinishMenu = Instantiate( gameFinishMenuPrefab ) ;
+    Spawn( gameFinishMenu ) ;
+    _gameFinishMenu = gameFinishMenu.GetComponent<GameFinishMenuOverlay>() ;
   }
 #endregion
 

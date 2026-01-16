@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 using FishNet.Object.Synchronizing;
 using FishNet.Demo.AdditiveScenes;
 using static UnityEngine.InputSystem.InputAction;
+using UnityEditor.MemoryProfiler;
+using FishNet.Connection;
 
 [RequireComponent(typeof(PlayerInput))]
 public class ClientShell : NetworkBehaviour
@@ -18,6 +20,11 @@ public class ClientShell : NetworkBehaviour
 
 #region 
   private PlayerInput _playerInput ;
+#endregion
+
+
+#region 
+  public PlayerSelect Seat => syncPlayerSeat.Value ;
 #endregion
 
 
@@ -138,6 +145,27 @@ public class ClientShell : NetworkBehaviour
 #endregion
 
 
+#region 
+  public void SwitchInputMode()
+  {
+    RpcSwitchInputMode(Owner) ;
+  }
+
+  [TargetRpc]
+  private void RpcSwitchInputMode(NetworkConnection conn)
+  {
+    if( _playerInput.currentActionMap.name == "Player" )
+    {
+      _playerInput.SwitchCurrentActionMap( "UI" ) ;
+    }
+    else
+    {
+      _playerInput.SwitchCurrentActionMap( "Player" ) ;
+    }
+  }
+#endregion
+
+
 #region Invoke Server
   [ServerRpc]
   private void ClientConnected()
@@ -148,30 +176,40 @@ public class ClientShell : NetworkBehaviour
   [ServerRpc]
   private void MoveRpc(Vector3 value)
   {
+    if( syncPlayerVessel.Value == null)
+      return ;
     syncPlayerVessel.Value.syncMove.Value = value ;
   }
 
   [ServerRpc]
   private void LookRpc(Vector3 value)
   {
+    if( syncPlayerVessel.Value == null)
+      return ;
     syncPlayerVessel.Value.syncLook.Value = value ;
   }
 
   [ServerRpc]
   private void Atk1Rpc(bool value)
   {
+    if( syncPlayerVessel.Value == null)
+      return ;
     syncPlayerVessel.Value.syncAtk1.Value = value ;
   }
 
   [ServerRpc]
   private void Atk2Rpc(bool value)
   {
+    if( syncPlayerVessel.Value == null)
+      return ;
     syncPlayerVessel.Value.syncAtk2.Value = value ;
   }
 
   [ServerRpc]
   private void Atk3Rpc(bool value)
   {
+    if( syncPlayerVessel.Value == null)
+      return ;
     syncPlayerVessel.Value.syncAtk3.Value = value ;
   }
 

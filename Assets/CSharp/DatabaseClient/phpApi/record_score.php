@@ -22,25 +22,16 @@ if (!is_array($data) || !isset($data["player2"])) {
 $player2 = $data["player2"] ;
 
 
-if (!is_array($data) || !isset($data["player1score"])) {
+if (!is_array($data) || !isset($data["score"])) {
   http_response_code(400);
-  echo json_encode(["ok" => false, "error" => "Missing player1score"]);
+  echo json_encode(["ok" => false, "error" => "Missing score"]);
   exit;
 }
 
-$player1score = $data["player1score"] ;
+$score = $data["score"] ;
 
 
-if (!is_array($data) || !isset($data["player2score"])) {
-  http_response_code(400);
-  echo json_encode(["ok" => false, "error" => "Missing player2score"]);
-  exit;
-}
-
-$player2score = $data["player2score"] ;
-
-
-$stmt = $pdo->prepare("INSERT INTO scores (player1,player2,player1score,player2score) VALUES (?,?,?,?)");
-$stmt->execute([$player1,$player2,$player1score,$player2score]);
+$stmt = $pdo->prepare("INSERT INTO scores (player1,player2,score) VALUES (?,?,?)");
+$stmt->execute([$player1,$player2,$score]);
 
 echo json_encode(["ok" => true, "id" => $pdo->lastInsertId()]);

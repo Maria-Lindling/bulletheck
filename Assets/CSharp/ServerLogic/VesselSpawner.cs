@@ -18,7 +18,7 @@ public class VesselSpawner : NetworkBehaviour
 
     GameObject vesselInstance = Instantiate( prefab, origin, new Quaternion() ) ;
 
-    vesselInstance.transform.SetParent( gameEntitiesObject.transform ) ;
+    vesselInstance.GetComponent<NetworkObject>().SetParent( gameEntitiesObject.GetComponent<NetworkObject>() ) ;
     
     Spawn(vesselInstance) ;
 

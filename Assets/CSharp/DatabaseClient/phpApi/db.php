@@ -3,7 +3,7 @@ header("Content-Type: application/json; charset=utf-8");
 
 // XAMPP defaults
 $host = "127.0.0.1";
-$db   = "pong";
+$db   = "bulletheck";
 $user = "root";
 $pass = "";
 // 

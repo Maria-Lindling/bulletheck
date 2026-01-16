@@ -16,6 +16,9 @@ internal class GameEventsConfigMeta
   [SerializeField] internal UnityEvent<GameEventContext> clearMessage ;
   [SerializeField] internal UnityEvent<GameEventContext> setMessage ;
   [SerializeField] internal UnityEvent<GameEventContext> showMessage ;
+  [SerializeField] internal UnityEvent<GameEventContext> submitScoreToDb ;
+  [SerializeField] internal UnityEvent<GameEventContext> refreshLeaderboard ;
+  [SerializeField] internal UnityEvent<GameEventContext> switchInputMode ;
   
   [Header("Scenario Status")]
   [SerializeField] internal UnityEvent<GameEventContext> scenarioBegin ;

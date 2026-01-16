@@ -19,7 +19,7 @@ public class EnemySpawner : NetworkBehaviour
 
     GameObject enemyInstance = Instantiate( prefab, origin, new Quaternion() ) ;
 
-    enemyInstance.transform.SetParent( gameEntitiesObject.transform ) ;
+    enemyInstance.GetComponent<NetworkObject>().SetParent( gameEntitiesObject.GetComponent<NetworkObject>() ) ;
     
     Spawn(enemyInstance) ;
 

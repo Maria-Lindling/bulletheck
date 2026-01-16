@@ -27,6 +27,10 @@ public class GameEventSystem : NetworkBehaviour
   public static UnityEvent<GameEventContext> ClientConnect { get; private set ; }
   public static UnityEvent<GameEventContext> ClientDisconnect { get; private set ; }
 
+  public static UnityEvent<GameEventContext> SubmitScoreToDb { get; private set ; }
+  public static UnityEvent<GameEventContext> RefreshLeaderboard { get; private set ; }
+  public static UnityEvent<GameEventContext> SwitchInputMode { get; private set ; }
+
   public static UnityEvent<GameEventContext> PauseMenu { get; private set ; }
   public static UnityEvent<GameEventContext> ScenarioBegin { get; private set ; }
   public static UnityEvent<GameEventContext> EncounterEnd { get; private set ; }
@@ -52,6 +56,10 @@ public class GameEventSystem : NetworkBehaviour
     
     ClientConnect     = metaEvents.clientConnect ;
     ClientDisconnect  = metaEvents.clientDisconnect ;
+
+    SubmitScoreToDb     = metaEvents.submitScoreToDb ;
+    RefreshLeaderboard  = metaEvents.refreshLeaderboard ;
+    SwitchInputMode     = metaEvents.switchInputMode ;
 
     SpawnEnemy        = metaEvents.spawnEnemy ;
     EnemyDefeated     = metaEvents.enemyDefeated ;
