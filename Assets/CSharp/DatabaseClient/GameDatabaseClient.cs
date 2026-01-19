@@ -291,20 +291,13 @@ public class GameDatabaseClient : NetworkBehaviour
 
   public void OnRefreshLeaderboardEntries(GameEventContext ctx)
   {
-    GameObject prefab = ctx.ReadValue<GameObject>(0) ;
     Transform parent = ctx.Source.GetComponent<GameFinishMenuOverlay>().LeaderboardTransform ;
 
-    for( int i = 0; i < parent.childCount ; i++)
+    int i = 0 ;
+    foreach(var (host, client, score) in AllScores().Take(parent.childCount))
     {
-      parent.transform.GetChild(i).GetComponent<NetworkObject>().Despawn() ;
-    }
-
-    foreach(var (host, client, score) in AllScores())
-    {
-      GameObject leaderboardEntryInstance = Instantiate( prefab ) ;
-      leaderboardEntryInstance.GetComponent<LeaderboardEntry>().SetValues(host,client,score) ;
-      leaderboardEntryInstance.transform.SetParent( parent ) ;
-      Spawn(leaderboardEntryInstance) ;
+      parent.transform.GetChild(i).GetComponent<LeaderboardEntry>().SetValues(host, client, score) ; 
+      i++ ;
     }
   }
 #endregion
@@ -326,7 +319,7 @@ public class GameDatabaseClient : NetworkBehaviour
       ) ;
     }
 
-    return values.ToArray() ;
+    return values.OrderByDescending((entry)=>entry.Item3).ToArray() ;
   }
 #endregion
 

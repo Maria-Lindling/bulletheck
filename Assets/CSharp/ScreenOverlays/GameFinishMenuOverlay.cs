@@ -204,5 +204,15 @@ public class GameFinishMenuOverlay : NetworkBehaviour
     syncHostName.OnChange     += OnHostNameChange ;
     syncClientName.OnChange   += OnClientNameChange ;
     syncSessionScore.OnChange += OnSessionScoreChange ;
+
+    if( IsServerInitialized )
+    {
+      leaderboardMenu.SetActive(true) ;
+      for(int i = 0 ; i < leaderboardListing.transform.childCount ; i++ )
+      {
+        Spawn( leaderboardListing.transform.GetChild(i).gameObject ) ;
+      }
+      leaderboardMenu.SetActive(false) ;
+    }
   }
 }

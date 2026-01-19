@@ -1,14 +1,9 @@
 using UnityEngine;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using Unity.VisualScripting;
-using static UnityEngine.InputSystem.InputAction;
 using System.Collections.Generic;
-using FishNet.Demo.AdditiveScenes;
 using System;
 using System.Collections;
-using FishNet.Example.Scened;
-using System.Linq;
 using FishNet.Connection;
 
 // main
@@ -100,8 +95,8 @@ public class WorldManager : NetworkBehaviour, IEntityController
     {
       _connectedPlayers.Add( clientShell ) ;
       clientShell.AssignSeat( (PlayerSelect) _connectedPlayers.Count ) ;
-      ctx.Source.GetComponent<NetworkObject>().SetParent( clientLogicObject.GetComponent<NetworkObject>() ) ;
       SetLocalPlayer(clientShell.Owner,clientShell.Seat) ;
+      ctx.Source.GetComponent<NetworkObject>().SetParent( clientLogicObject.GetComponent<NetworkObject>() ) ;
     }
 
     CheckScenarioBegin() ;
@@ -158,7 +153,9 @@ public class WorldManager : NetworkBehaviour, IEntityController
   {
     // DEBUG: cheat victory
     if( gameState.Value == GameState.Playing )
+    {
       GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(14069).Build() ) ;
+    }
 
     switch( gameState.Value )
     {
@@ -209,6 +206,8 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   private void OnGameStateChange(GameState prev, GameState next, bool isServer)
   {
+    if( isServer )
+      Debug.Log( $"new game state is: {next}" ) ;
     switch( next )
     {
       case GameState.Playing :
