@@ -178,6 +178,14 @@ public class GameFinishMenuOverlay : NetworkBehaviour
     OpenForAll( ctx.ReadValue<int>() ) ;
   }
 
+  public void OnScoreSubmitted(GameEventContext ctx)
+  {
+    GameEventSystem.RefreshLeaderboard.Invoke( new GameEventContextBuilder( gameObject )
+      .AddValue<GameObject>( listingEntryPrefab )
+      .AddValue<GameObject>( leaderboardListing )
+      .Build() ) ;
+  }
+
   [ObserversRpc]
   private void OpenForAll(int score)
   {

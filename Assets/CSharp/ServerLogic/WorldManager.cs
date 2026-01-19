@@ -174,6 +174,11 @@ public class WorldManager : NetworkBehaviour, IEntityController
     _gameFinishMenu.OnEncounterEnd( ctx ) ;
   }
 
+  public void OnScoreSubmitted(GameEventContext ctx)
+  {
+    _gameFinishMenu.OnScoreSubmitted( ctx ) ;
+  }
+
   /// <summary>
   /// On pause menu input (ESC) pause/unpause the game. No actual pause menu
   /// exists.
