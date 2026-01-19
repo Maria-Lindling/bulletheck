@@ -6,14 +6,8 @@ using System;
 using System.Collections;
 using FishNet.Connection;
 
-// main
-// TODO: add "retry level" button
-// TODO: add "fail and retry/exit" panel to game finish menu
-// TODO: finish game finish menu integration / logic
-// TODO: hook up game finish menu to php / database
 // misc
-// TODO: finishing game / open menu disables player input on vessel
-// TODO: populate leaderboard
+// TODO: add "retry level" button
 // TODO: alternate leaderboard view with "your score" for comparison
 [RequireComponent(typeof(GameDatabaseClient))]
 public class WorldManager : NetworkBehaviour, IEntityController
@@ -66,18 +60,25 @@ public class WorldManager : NetworkBehaviour, IEntityController
   public ForceSelection Force => ForceSelection.None ;
 #endregion
 
-
+  /// <summary>
+  /// <para>If the game is waiting on players, then check if enough players are connected; otherwise return.</para>
+  /// <para>If not enough players connected, display waiting message.</para>
+  /// <para>Otherwise spawn player vessel and begin game.</para>
+  /// </summary>
   private void CheckScenarioBegin()
   {
-    if( gameState.Value == GameState.WaitingForPlayers && _connectedPlayers.Count < 2 )
+    if( gameState.Value != GameState.WaitingForPlayers )
+      return ;
+
+    if( _connectedPlayers.Count < 2 )
     {
-      
       GameEventContextBuilder gCtxB = new( gameObject ) ;
       gCtxB.AddValue<string>("Waiting for co-op partner.") ;
       GameEventSystem.SetMessage.Invoke( gCtxB.Build() ) ;
       GameEventSystem.ShowMessage.Invoke( new(gameObject) ) ;
       return ;
     }
+
     GameEventContext vesselCtx = new GameEventContextBuilder( gameObject )
       .AddValue<GameObject>(playerVessel)
       .AddValue<Vector3>(playerSpawnPoint.transform.position)
@@ -89,6 +90,12 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
 
   #region Events
+  /// <summary>
+  /// Adds the client that connected to the list of connected clients and assigns
+  /// it a seat (pilot/gunner). Then check if the scenario has enough players to
+  /// begin.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnClientConnect(GameEventContext ctx)
   {
     if( ctx.Source.TryGetComponent<ClientShell>(out ClientShell clientShell))
@@ -107,6 +114,11 @@ public class WorldManager : NetworkBehaviour, IEntityController
     LocalPlayer = playerSelect ;
   }
 
+  /// <summary>
+  /// When the player vessel is spawned, assign it to each of the controlling
+  /// players and set the gameState to 'Playing'.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnVesselSpawned(GameEventContext ctx)
   {
     if( ctx.Source.TryGetComponent<PlayerVessel>(out PlayerVessel playerVessel))
@@ -122,7 +134,11 @@ public class WorldManager : NetworkBehaviour, IEntityController
     }
   }
 
-  // bool value = defeated? true/false
+  /// <summary>
+  /// If the player vessel is destroyed and it is defeated (value = true), then
+  /// display death message, but do not pause the game.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnVesselDespawned(GameEventContext ctx)
   {
     if( ctx.TryReadValue<bool>(out bool value) && value == true )
@@ -134,6 +150,11 @@ public class WorldManager : NetworkBehaviour, IEntityController
     }
   }
 
+  /// <summary>
+  /// When the scenario begins, start spawning enemy vessels as described in
+  /// the encounter queue.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnScenarioBegin(GameEventContext ctx)
   {
     _encountersQueue = new ( encounters ) ;
@@ -143,19 +164,28 @@ public class WorldManager : NetworkBehaviour, IEntityController
     StartCoroutine( RollOutEncounters() ) ;
   }
 
+  /// <summary>
+  /// When the encounter is finished, open the game finish menu.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnEncounterEnd(GameEventContext ctx)
   {
     gameState.Value = GameState.Finished ;
     _gameFinishMenu.OnEncounterEnd( ctx ) ;
   }
 
+  /// <summary>
+  /// On pause menu input (ESC) pause/unpause the game. No actual pause menu
+  /// exists.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnPauseMenu(GameEventContext ctx)
   {
     // DEBUG: cheat victory
-    if( gameState.Value == GameState.Playing )
-    {
-      GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(14069).Build() ) ;
-    }
+    //if( gameState.Value == GameState.Playing )
+    //{
+    //  GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(14069).Build() ) ;
+    //}
 
     switch( gameState.Value )
     {
@@ -173,6 +203,12 @@ public class WorldManager : NetworkBehaviour, IEntityController
     }
   }
 
+  /// <summary>
+  /// When the player/s take damage, substract the set damagePenalty from the
+  /// players' score.
+  /// <br/>Only do this if the game is currently playing.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnPlayerTakeDamage( GameEventContext ctx )
   {
     if( gameState.Value != GameState.Playing )
@@ -181,6 +217,11 @@ public class WorldManager : NetworkBehaviour, IEntityController
     syncPlayerScore.Value = Math.Max( syncPlayerScore.Value - damagePenalty, 0 ) ;
   }
 
+  /// <summary>
+  /// When an enemy is defeated, add the enemy's score value to the players' score.
+  /// <br/>Only do this if the game is currently playing.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnEnemyDefeated( GameEventContext ctx )
   {
     if( gameState.Value != GameState.Playing )
@@ -195,6 +236,13 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
 
 #region 
+  /// <summary>
+  /// When the players' score changes, invoke the ScorePoint event to inform
+  /// the overlay to update its displayed value.
+  /// </summary>
+  /// <param name="prev"></param>
+  /// <param name="next"></param>
+  /// <param name="isServer"></param>
   private void OnScoreChange(int prev, int next, bool isServer)
   {
     GameEventSystem.ScorePoint.Invoke(
@@ -204,6 +252,13 @@ public class WorldManager : NetworkBehaviour, IEntityController
     ) ;
   }
 
+  /// <summary>
+  /// When the game state changes, currently we simply pause/unpause the game
+  /// via timeScale.
+  /// </summary>
+  /// <param name="prev"></param>
+  /// <param name="next"></param>
+  /// <param name="isServer"></param>
   private void OnGameStateChange(GameState prev, GameState next, bool isServer)
   {
     if( isServer )
@@ -224,6 +279,10 @@ public class WorldManager : NetworkBehaviour, IEntityController
     }
   }
 
+  /// <summary>
+  /// When a switch in input mode is being requested, do so for all active players.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnSwitchInputMode(GameEventContext ctx)
   {
     foreach(ClientShell player in _connectedPlayers)
@@ -235,6 +294,11 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
 
 #region Encounter
+  /// <summary>
+  /// Create a queue of encounters from the editor configuration and set them to
+  /// spawn in sequence.
+  /// </summary>
+  /// <returns></returns>
   private IEnumerator RollOutEncounters()
   {
     while( _encountersQueue.Count > 0 && gameState.Value == GameState.Playing )
@@ -253,6 +317,12 @@ public class WorldManager : NetworkBehaviour, IEntityController
       GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(syncPlayerScore.Value).Build() ) ;
   }
 
+  /// <summary>
+  /// Requests the spawning of enemy vessels according to the encounter until no
+  /// further instructions remain in the queue.
+  /// </summary>
+  /// <param name="encounterQueue"></param>
+  /// <returns></returns>
   private IEnumerator RollOutEncounter(Queue<EncounterEntry> encounterQueue)
   {
     while( encounterQueue.Count > 0 && gameState.Value == GameState.Playing )
@@ -273,6 +343,9 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
 
 #region Backdrop
+  /// <summary>
+  /// slowly scrolls the backdrop downward
+  /// </summary>
   private void ScrollBackdrop()
   {
     if( gameState.Value != GameState.Playing )

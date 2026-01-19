@@ -56,6 +56,7 @@ public class GameDatabaseClient : NetworkBehaviour
   private readonly List<ScoreRow> _allScores = new () ;
 
 
+#region Coroutine Starters 
   public void SaveName(string playerName)
   {
     StartCoroutine( SaveNameCoroutine(playerName, (pName,pId) => { _registeredPlayers.Add( (playerName,pId) ) ; } ) ) ;
@@ -80,8 +81,14 @@ public class GameDatabaseClient : NetworkBehaviour
   {
     StartCoroutine( FetchScoresCoroutine(onResult) ) ;
   }
+#endregion
 
 
+  /// <summary>
+  /// Retrieves the high scores / leaderboard from the database.
+  /// </summary>
+  /// <param name="onResult"></param>
+  /// <returns></returns>&
   private IEnumerator FetchScoresCoroutine(Action<ScoreRow[]> onResult)
   {
     var url = $"{baseUrl}/get_scores.php";
@@ -105,6 +112,12 @@ public class GameDatabaseClient : NetworkBehaviour
     onResult?.Invoke( res.scores ) ;
   }
 
+  /// <summary>
+  /// fetches a specific score (by id) from the database
+  /// </summary>
+  /// <param name="id"></param>
+  /// <param name="onResult"></param>
+  /// <returns></returns>
   private IEnumerator FetchScoreCoroutine(int id, Action<ScoreRow> onResult)
   {
     var url = $"{baseUrl}/get_score.php";
@@ -137,6 +150,14 @@ public class GameDatabaseClient : NetworkBehaviour
     onResult?.Invoke( res.score ) ;
   }
 
+  /// <summary>
+  /// records a score with the given players in the database
+  /// </summary>
+  /// <param name="player1id"></param>
+  /// <param name="player2id"></param>
+  /// <param name="score"></param>
+  /// <param name="onResult"></param>
+  /// <returns></returns>
   private IEnumerator RecordScoreCoroutine(int player1id, int player2id, int score, Action<bool,int,string> onResult)
   {
     var url = $"{baseUrl}/record_score.php";
@@ -171,6 +192,12 @@ public class GameDatabaseClient : NetworkBehaviour
     onResult?.Invoke( res.ok, res.id, res.error ) ;
   }
 
+  /// <summary>
+  /// Registers a new player's name to the database
+  /// </summary>
+  /// <param name="playerName"></param>
+  /// <param name="onResult"></param>
+  /// <returns></returns>
   private IEnumerator SaveNameCoroutine(string playerName,Action<string,int> onResult)
   {
     var url = $"{baseUrl}/save_name.php";
@@ -204,6 +231,11 @@ public class GameDatabaseClient : NetworkBehaviour
     onResult?.Invoke( playerName, res.id ) ;
   }
 
+  /// <summary>
+  /// retrieves a list of all registered player names
+  /// </summary>
+  /// <param name="onResult"></param>
+  /// <returns></returns>
   private IEnumerator GetNamesCoroutine(Action<int[],string[],string[]> onResult)
   {
     var url = $"{baseUrl}/get_names.php";
@@ -243,6 +275,14 @@ public class GameDatabaseClient : NetworkBehaviour
 
 
 #region 
+  /// <summary>
+  /// If players are no in the database, then they are registered to it.
+  /// Then their score is recorded.
+  /// </summary>
+  /// <param name="host"></param>
+  /// <param name="client"></param>
+  /// <param name="score"></param>
+  /// <returns></returns>
   public IEnumerator SubmitScore(string host, string client, int score)
   {
     int host_id = -1 ;
@@ -278,6 +318,10 @@ public class GameDatabaseClient : NetworkBehaviour
 
 
 #region Game Events
+  /// <summary>
+  /// Event Handler for the request to record the players' score to the database
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnSubmitScoreToDb(GameEventContext ctx)
   {
     StartCoroutine(
@@ -289,6 +333,11 @@ public class GameDatabaseClient : NetworkBehaviour
     ) ;
   }
 
+  /// <summary>
+  /// Updates the leaderboard with scores that reflect the current values of
+  /// AllScores, up to a maximum number of entries as defined in the prefab.
+  /// </summary>
+  /// <param name="ctx"></param>
   public void OnRefreshLeaderboardEntries(GameEventContext ctx)
   {
     Transform parent = ctx.Source.GetComponent<GameFinishMenuOverlay>().LeaderboardTransform ;
@@ -304,6 +353,7 @@ public class GameDatabaseClient : NetworkBehaviour
 
 
 #region 
+  // A sorted tuple list of all scores retrieved from the database
   public (string host, string client, int score)[] AllScores()
   {
     List<(string,string,int)> values = new () ;

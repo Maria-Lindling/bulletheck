@@ -4,6 +4,7 @@ using FishNet.Object.Synchronizing;
 using TMPro;
 using UnityEngine;
 
+// syncVar values are not updating on clients for [a reason]
 public class LeaderboardEntry : NetworkBehaviour
 {
   [SerializeField] private TextMeshProUGUI hostText ;
@@ -50,9 +51,5 @@ public class LeaderboardEntry : NetworkBehaviour
     syncVarHost.OnChange   += OnHostChange;
     syncVarClient.OnChange += OnClientChange;
     syncVarScore.OnChange  += OnScoreChange;
-  }
-
-  void Start()
-  {
   }
 }
