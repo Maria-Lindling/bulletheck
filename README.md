@@ -1,4 +1,9 @@
 # bulletheck
+## Instructions
+- Import SQL database found at `Assets\CSharp\DatabaseClient\phpSQLdb\bulletheck.sql` into xampp phpMyAdmin
+- Copy files found at `Assets\CSharp\DatabaseClient\phpApi\*` to `C:\xampp\htdocs\bulletheck_api\*`
+- Start the game using the Unity Editor on the machine running xampp
+
 ## Project Checklist
 ### 1. Multiplayer
 - [x] Set up FishNet in the Unity Project
@@ -24,7 +29,7 @@
 - [x] Hit detection and damage functions correctly
 
 ### 4. Enemy-, Wave-, or Boss-System 
-- [ ] At least two different enemy-types
+- [x] At least two different enemy-types
 - [x] Enemies are spawned from server-side
 - [x] Either
   - [ ] one Boss enemy
@@ -40,9 +45,9 @@
 - [x] HUD features at least
   - [x] Health / Lives
   - [x] Score
-- [ ] Distribute points for kills and/or time survived
-- [ ] Score is synchronized and displayed correctly
-- [ ] history/listing of High Scores is maintained server-side via PHP & SQL
+- [x] Distribute points for kills and/or time survived
+- [x] Score is synchronized and displayed correctly
+- [x] history/listing of High Scores is maintained server-side via PHP & SQL
 
 ### 7. Bonus features
 - [x] Scrolling background
