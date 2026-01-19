@@ -25,46 +25,46 @@ public class GameSetupMenuOverlay : MonoBehaviour
 #region Events
   public void OnClickButtonTopMenu()
   {
-    hostMenuConfig.Top.SetActive(false) ;
-    clientMenuConfig.Top.SetActive(false) ;
-    topMenu.SetActive(true) ;
+    hostMenuConfig.Top.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    clientMenuConfig.Top.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition = Vector3.zero ;
   }
 
   public void OnClickButtonHostMenu()
   {
-    clientMenuConfig.Top.SetActive(false) ;
-    topMenu.SetActive(false) ;
+    clientMenuConfig.Top.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
     
-    hostMenuConfig.Top.SetActive(true) ;
+    hostMenuConfig.Top.transform.localPosition = Vector3.zero ;
 
     hostMenuConfig.IP.text = GetFirstInterNetworkIP() ;
-  }
 
-  public void OnClickButtonConnectMenu()
-  {
-    hostMenuConfig.Top.SetActive(false) ;
-    topMenu.SetActive(false) ;
-    
-    clientMenuConfig.Top.SetActive(true) ;
-  }
-
-  public void OnClickButtonHost()
-  {
-    if( !ValidatePort( hostMenuConfig.Port.text, out ushort port ) )
+    if( !ValidatePort( /*hostMenuConfig.Port.text*/ "7700", out ushort port ) )
     {
       Debug.LogError( $"Invalid Port \"{hostMenuConfig.Port.text}\"" ) ;
       return ;
     }
-
-    topMenu.SetActive(false) ;
-
     _tugboat.SetPort( port ) ;
     _tugboat.StartConnection( true ) ;
 
     _tugboat.SetClientAddress( "localhost" ) ;
     _tugboat.StartConnection( false ) ;
+  }
 
-    gameObject.SetActive(false) ;
+  public void OnClickButtonConnectMenu()
+  {
+    hostMenuConfig.Top.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    
+    clientMenuConfig.Top.transform.localPosition = Vector3.zero ;
+  }
+
+  public void OnClickButtonHost()
+  {
+
+    topMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+
+    gameObject.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
   }
 
   public void OnClickButtonConnect()
@@ -81,13 +81,13 @@ public class GameSetupMenuOverlay : MonoBehaviour
       return ;
     }
     
-    topMenu.SetActive(false) ;
+    topMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
 
     _tugboat.SetClientAddress( ipAddress ) ;
     _tugboat.SetPort( port ) ;
     _tugboat.StartConnection( false ) ;
 
-    gameObject.SetActive(false) ;
+    gameObject.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
   } 
 #endregion
 
@@ -132,9 +132,9 @@ public class GameSetupMenuOverlay : MonoBehaviour
 
   private void Awake()
   {
-    hostMenuConfig.Top.SetActive(false) ;
-    clientMenuConfig.Top.SetActive(false) ;
-    topMenu.SetActive(true) ;
+    hostMenuConfig.Top.transform.localPosition   = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    clientMenuConfig.Top.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition = Vector3.zero ;
 
     Debug.Log( $"My IP is: {GetFirstInterNetworkIP()}" ) ;
   }

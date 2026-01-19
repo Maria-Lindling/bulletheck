@@ -3,9 +3,7 @@ using FishNet.Object;
 using System.Collections;
 using UnityEngine.InputSystem;
 using FishNet.Object.Synchronizing;
-using FishNet.Demo.AdditiveScenes;
 using static UnityEngine.InputSystem.InputAction;
-using UnityEditor.MemoryProfiler;
 using FishNet.Connection;
 
 [RequireComponent(typeof(PlayerInput))]
