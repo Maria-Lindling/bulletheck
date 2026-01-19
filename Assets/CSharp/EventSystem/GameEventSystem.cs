@@ -1,8 +1,6 @@
 using UnityEngine;
 using FishNet.Object;
 using UnityEngine.Events;
-using System;
-using static UnityEngine.InputSystem.InputAction;
 
 public class GameEventSystem : NetworkBehaviour
 {

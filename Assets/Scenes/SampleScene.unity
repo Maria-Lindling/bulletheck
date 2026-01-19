@@ -145,7 +145,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4393252310584637057, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7443408887813606049, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1842,6 +1842,21 @@ MonoBehaviour:
         - m_Target: {fileID: 443183463}
           m_TargetAssemblyTypeName: GameDatabaseClient, Assembly-CSharp
           m_MethodName: OnSubmitScoreToDb
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    scoreSubmitted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 443183462}
+          m_TargetAssemblyTypeName: WorldManager, Assembly-CSharp
+          m_MethodName: OnScoreSubmitted
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

@@ -1,4 +1,6 @@
 
+using System.Collections;
+using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using TMPro;
@@ -26,16 +28,29 @@ public class LeaderboardEntry : NetworkBehaviour
 
   void OnHostChange(string prev, string next, bool isServer)
   {
+    var localClient = GameObject.FindObjectsByType<ClientShell>(FindObjectsSortMode.None).FirstOrDefault( (cs) => cs.IsOwner ) ;
+    if( !isServer && localClient.Seat == PlayerSelect.Player2 )
+      Debug.Log( $"Local client {localClient.Seat} updating host leaderboard entry from {prev} to {next}" ) ;
+
+    if( prev == next )
+      return ;
+      
     hostText.text = next ;
   }
 
   void OnClientChange(string prev, string next, bool isServer)
   {
+    if( prev == next )
+      return ;
+
     clientText.text = next ;
   }
 
   void OnScoreChange(int prev, int next, bool isServer)
   {
+    if( prev == next )
+      return ;
+
     scoreText.text = next.ToString("###,###,###,##0") ;
   }
 
@@ -48,6 +63,12 @@ public class LeaderboardEntry : NetworkBehaviour
 
   void Awake()
   {
+    StartCoroutine( DelayedInit() ) ;
+  }
+
+  IEnumerator DelayedInit()
+  {
+    yield return null ;
     syncVarHost.OnChange   += OnHostChange;
     syncVarClient.OnChange += OnClientChange;
     syncVarScore.OnChange  += OnScoreChange;

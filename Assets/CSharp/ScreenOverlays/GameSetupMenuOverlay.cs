@@ -1,15 +1,7 @@
 using UnityEngine;
-using FishNet.Object;
-using GameKit.Dependencies.Utilities;
-using UnityEngine.UI;
-using TMPro;
 using FishNet.Transporting.Tugboat;
-using System;
-using UnityEngine.Rendering;
 using System.Text.RegularExpressions;
-using FishNet.Managing;
 using System.Net;
-using FishNet.Authenticating;
 using System.Net.Sockets;
 
 public class GameSetupMenuOverlay : MonoBehaviour

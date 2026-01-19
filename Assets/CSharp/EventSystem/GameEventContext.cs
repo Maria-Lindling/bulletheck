@@ -1,9 +1,5 @@
 using UnityEngine;
-using FishNet.Object;
-using UnityEngine.Events;
 using System;
-using System.Collections;
-using Mono.Cecil.Cil;
 
 public class GameEventContext
 {

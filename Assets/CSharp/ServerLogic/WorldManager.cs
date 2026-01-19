@@ -187,10 +187,10 @@ public class WorldManager : NetworkBehaviour, IEntityController
   public void OnPauseMenu(GameEventContext ctx)
   {
     // DEBUG: cheat victory
-    //if( gameState.Value == GameState.Playing )
-    //{
-    //  GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(14069).Build() ) ;
-    //}
+    if( gameState.Value == GameState.Playing )
+    {
+      GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(1).Build() ) ;
+    }
 
     switch( gameState.Value )
     {

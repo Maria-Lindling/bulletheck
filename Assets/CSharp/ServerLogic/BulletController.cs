@@ -1,9 +1,6 @@
 using UnityEngine;
 using FishNet.Object;
 using System.Collections;
-using System.Diagnostics;
-using FishNet.Demo.AdditiveScenes;
-using GameKit.Dependencies.Utilities;
 
 public class BulletController : NetworkBehaviour, IEntityController
 {

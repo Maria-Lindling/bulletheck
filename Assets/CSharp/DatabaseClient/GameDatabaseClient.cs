@@ -341,7 +341,12 @@ public class GameDatabaseClient : NetworkBehaviour
   public void OnRefreshLeaderboardEntries(GameEventContext ctx)
   {
     Transform parent = ctx.Source.GetComponent<GameFinishMenuOverlay>().LeaderboardTransform ;
+    StartCoroutine( DelayedRefreshLeaderboardCoroutine( parent, 0.6334f) ) ;
+  }
 
+  private IEnumerator DelayedRefreshLeaderboardCoroutine(Transform parent, float delay)
+  {
+    yield return new WaitForSeconds(delay) ;
     int i = 0 ;
     foreach(var (host, client, score) in AllScores().Take(parent.childCount))
     {

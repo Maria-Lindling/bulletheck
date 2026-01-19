@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "RadialBulletPattern", menuName = "Scriptable Objects/RadialBulletPattern")]

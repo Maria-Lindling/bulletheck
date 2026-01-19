@@ -1,18 +1,8 @@
 using UnityEngine;
 using FishNet.Object;
-using GameKit.Dependencies.Utilities;
 using UnityEngine.UI;
 using TMPro;
-using FishNet.Transporting.Tugboat;
-using System;
-using UnityEngine.Rendering;
-using System.Text.RegularExpressions;
-using FishNet.Managing;
-using System.Net;
-using FishNet.Authenticating;
-using System.Net.Sockets;
 using FishNet.Object.Synchronizing;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class GameFinishMenuOverlay : NetworkBehaviour
 {
@@ -30,7 +20,6 @@ public class GameFinishMenuOverlay : NetworkBehaviour
   [Header("Leaderboard")]
   [SerializeField] GameObject leaderboardMenu ;
   [SerializeField] GameObject leaderboardListing ;
-  [SerializeField] GameObject listingEntryPrefab ;
 #endregion
 
 
@@ -54,26 +43,26 @@ public class GameFinishMenuOverlay : NetworkBehaviour
 #region Events
   public void OnClickButtonTopMenu()
   {
-    leaderboardMenu.SetActive(false) ;
-    submitScoreMenu.SetActive(false) ;
-    topMenu.SetActive(true) ;
+    leaderboardMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    submitScoreMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+
+    topMenu.transform.localPosition = Vector3.zero ;
   }
 
   public void OnClickButtonLeaderboardMenu()
   {
-    submitScoreMenu.SetActive(false) ;
-    topMenu.SetActive(false) ;
+    submitScoreMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition         = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
 
-    leaderboardMenu.SetActive(true) ;
-    leaderboardListing.SetActive(true) ;
+    leaderboardMenu.transform.localPosition = Vector3.zero ;
   }
 
   public void OnClickButtonSubmitScoreMenu()
   {
-    leaderboardMenu.SetActive(false) ;
-    topMenu.SetActive(false) ;
+    leaderboardMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition         = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
     
-    submitScoreMenu.SetActive(true) ;
+    submitScoreMenu.transform.localPosition = Vector3.zero ;
   }
 
   public void OnContinuePlaying()
@@ -169,10 +158,7 @@ public class GameFinishMenuOverlay : NetworkBehaviour
   {
     GameEventSystem.SwitchInputMode.Invoke( new(gameObject) ) ;
 
-    GameEventSystem.RefreshLeaderboard.Invoke( new GameEventContextBuilder( gameObject )
-      .AddValue<GameObject>( listingEntryPrefab )
-      .AddValue<GameObject>( leaderboardListing )
-      .Build() ) ;
+    GameEventSystem.RefreshLeaderboard.Invoke( new GameEventContext( gameObject ) ) ;
 
     syncSessionScore.Value = ctx.ReadValue<int>() ;
     OpenForAll( ctx.ReadValue<int>() ) ;
@@ -180,17 +166,16 @@ public class GameFinishMenuOverlay : NetworkBehaviour
 
   public void OnScoreSubmitted(GameEventContext ctx)
   {
-    GameEventSystem.RefreshLeaderboard.Invoke( new GameEventContextBuilder( gameObject )
-      .AddValue<GameObject>( listingEntryPrefab )
-      .AddValue<GameObject>( leaderboardListing )
-      .Build() ) ;
+    GameEventSystem.RefreshLeaderboard.Invoke( new GameEventContext( gameObject ) ) ;
   }
 
   [ObserversRpc]
   private void OpenForAll(int score)
   {
-    topMenu.SetActive(true) ;
-    background.SetActive(true) ;
+    leaderboardMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    submitScoreMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition         = Vector3.zero ;
+    background.transform.localPosition      = Vector3.zero ;
 
     victoryMessage.text = victoryMessage.text.Replace( "[[SCORE]]", score.ToString("###,###,###,##0") ) ;
   }
@@ -206,10 +191,11 @@ public class GameFinishMenuOverlay : NetworkBehaviour
 
   private void Awake()
   {
-    leaderboardMenu.SetActive(false) ;
-    submitScoreMenu.SetActive(false) ;
-    topMenu.SetActive(false) ;
-    background.SetActive(false) ;
+    // I guess this works to stop the leaderboard update from being aborted prematurely, but wow do I hate it.
+    leaderboardMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    submitScoreMenu.transform.localPosition = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    topMenu.transform.localPosition         = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
+    background.transform.localPosition      = new Vector3( -1920.0f, 0.0f, 0.0f ) ;
   }
 
   private void Start()
@@ -220,12 +206,10 @@ public class GameFinishMenuOverlay : NetworkBehaviour
 
     if( IsServerInitialized )
     {
-      leaderboardMenu.SetActive(true) ;
       for(int i = 0 ; i < leaderboardListing.transform.childCount ; i++ )
       {
         Spawn( leaderboardListing.transform.GetChild(i).gameObject ) ;
       }
-      leaderboardMenu.SetActive(false) ;
     }
   }
 }

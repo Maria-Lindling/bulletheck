@@ -1,8 +1,6 @@
-using Unity;
 using System;
 using UnityEngine.Events;
 using UnityEngine;
-using static UnityEngine.InputSystem.InputAction;
 
 [Serializable]
 internal class GameEventsConfigMeta
