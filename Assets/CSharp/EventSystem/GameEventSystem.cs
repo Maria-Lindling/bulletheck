@@ -11,6 +11,7 @@ public class GameEventSystem : NetworkBehaviour
 #endregion
 
   public static UnityEvent<GameEventContext> PlayerTakeDamage { get; private set ; }
+  public static UnityEvent<GameEventContext> PlayerDefeated { get; private set ; }
   public static UnityEvent<GameEventContext> ScorePoint { get; private set ; }
   public static UnityEvent<GameEventContext> PlayerRegister { get; private set ; }
 
@@ -39,6 +40,8 @@ public class GameEventSystem : NetworkBehaviour
   public static UnityEvent<GameEventContext> ClearMessage { get; private set ; }
   public static UnityEvent<GameEventContext> SetMessage { get; private set ; }
   public static UnityEvent<GameEventContext> ShowMessage { get; private set ; }
+  public static UnityEvent<string> NewCarousselMessage { get; private set ; }
+
 
   private void Start()
   {
@@ -46,6 +49,7 @@ public class GameEventSystem : NetworkBehaviour
       return ;
     
     PlayerTakeDamage  = playerEvents.playerTakeDamage ;
+    PlayerDefeated    = playerEvents.playerDefeated ;
     ScorePoint        = playerEvents.scorePoint ;
     PlayerRegister    = playerEvents.playerRegister ;
     SpawnVessel       = playerEvents.spawnVessel ;
@@ -73,5 +77,6 @@ public class GameEventSystem : NetworkBehaviour
     ClearMessage      = metaEvents.clearMessage ;
     SetMessage        = metaEvents.setMessage ;
     ShowMessage       = metaEvents.showMessage ;
+    NewCarousselMessage = metaEvents.newCarousselMessage ;
   }
 }

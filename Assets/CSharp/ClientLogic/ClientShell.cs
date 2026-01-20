@@ -166,14 +166,9 @@ public class ClientShell : NetworkBehaviour
 
 #region Invoke Server
   [ServerRpc]
-  private void ClientConnected()
-  {
-    GameEventSystem.ClientConnect.Invoke( new GameEventContext( gameObject ) ) ;
-  }
-
-  [ServerRpc]
   private void MoveRpc(Vector3 value)
   {
+    Debug.Assert( syncPlayerVessel.Value != null ) ;
     if( syncPlayerVessel.Value == null)
       return ;
     syncPlayerVessel.Value.syncMove.Value = value ;
@@ -240,23 +235,24 @@ public class ClientShell : NetworkBehaviour
 #region Init
   private IEnumerator DelayedIsOwner()
   {
-    syncPlayerSeat.OnChange += OnSeatChange ;
+    syncPlayerSeat.OnChange   += OnSeatChange ;
     syncPlayerVessel.OnChange += OnVesselChange ;
-    syncIsReady.OnChange += OnReadyChange ;
+    syncIsReady.OnChange      += OnReadyChange ;
 
     _playerInput = GetComponent<PlayerInput>() ;
     _playerInput.enabled = false ;
 
     yield return null ;
-    if( IsOwner )
+    if( IsOwner || IsServerInitialized )
     {
+      Debug.Log( $"Enabling player input for player \"{Seat}\"") ;
       _playerInput.enabled = true ;
-
-      ClientConnected() ;
     }
-    else if( IsServerInitialized )
+    
+    if( IsServerInitialized )
     {
-      
+      yield return new WaitForSeconds( 0.124f ) ;
+      GameEventSystem.ClientConnect.Invoke( new GameEventContext( gameObject ) ) ;
     }
   }
 #endregion

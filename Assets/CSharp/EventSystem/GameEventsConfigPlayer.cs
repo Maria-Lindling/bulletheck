@@ -15,4 +15,5 @@ internal class GameEventsConfigPlayer
   [SerializeField] internal UnityEvent<GameEventContext> spawnBullet ;
   [SerializeField] internal UnityEvent<GameEventContext> scorePoint ;
   [SerializeField] internal UnityEvent<GameEventContext> playerTakeDamage ;
+  [SerializeField] internal UnityEvent<GameEventContext> playerDefeated ;
 }

@@ -143,7 +143,10 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
       iFramesEnd = TimeManager.LocalTick + TimeManager.TimeToTicks( stats.IFrames ) ;
 
     if( next <= 0.0f )
+    {
+      GameEventSystem.PlayerDefeated.Invoke( new (gameObject) ) ;
       StartCoroutine( ShrinkAndDespawn() ) ;
+    }
   }
 
   private void OnMoveChanged(Vector3 prev, Vector3 next, bool isServer)

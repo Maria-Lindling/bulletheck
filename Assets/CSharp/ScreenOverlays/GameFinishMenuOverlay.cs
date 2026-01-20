@@ -204,12 +204,12 @@ public class GameFinishMenuOverlay : NetworkBehaviour
     syncClientName.OnChange   += OnClientNameChange ;
     syncSessionScore.OnChange += OnSessionScoreChange ;
 
-    if( IsServerInitialized )
-    {
-      for(int i = 0 ; i < leaderboardListing.transform.childCount ; i++ )
-      {
-        Spawn( leaderboardListing.transform.GetChild(i).gameObject ) ;
-      }
-    }
+    //if( IsServerInitialized )
+    //{
+    //  for(int i = 0 ; i < leaderboardListing.transform.childCount ; i++ )
+    //  {
+    //    Spawn( leaderboardListing.transform.GetChild(i).gameObject ) ;
+    //  }
+    //}
   }
 }

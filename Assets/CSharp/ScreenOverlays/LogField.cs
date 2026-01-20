@@ -2,49 +2,83 @@ using UnityEngine;
 using FishNet.Object;
 using System.Collections;
 using Unity.VisualScripting;
+using FishNet.Object.Synchronizing;
+using TMPro;
+using UnityEngine.Rendering;
 
 public class LogField : NetworkBehaviour
 {
+
+  private TextMeshProUGUI textField ;
+  private float width ;
+  private float height ;
 
   public float SlideInTime { get ; private set ; }
   public float LingerTime { get ; private set ; }
   public float SlideUpTime { get ; private set ; }
 
-  public bool IsOnScreen { get; private set ; } = false ;
-  public bool Lingering { get; private set ; } = false ;
+  public bool IsOnScreen => rt != null && rt.localPosition.x > -width && rt.localPosition.y < 0.0f;
+  
+  public Vector3 PrevPosition { get ; private set ; }
+  public Vector3 InitialPosition { get ; private set ; }
+  public Vector3 NextPosition { get ; private set ; }
 
-  public LogField PrevSibling { get ; private set ; }
-  public LogField NextSibling { get ; private set ; }
+  private RectTransform rt ;
 
-  public Vector3 PrevPosition { get ; private set ; } = new Vector3( -960.0f, -120.0f, 0.0f ) ;
-  public Vector3 InitialPosition { get ; private set ; } = new Vector3( -960.0f, -120.0f, 0.0f ) ;
-  public Vector3 NextPosition { get ; private set ; } = new Vector3( 0.0f, -120.0f, 0.0f ) ;
+  private readonly SyncVar<string> syncText = new () ;
 
-
-
-  public void SlideAndLinger( LogField precedingSibling )
+  [Server]
+  public void SetSlideTimes( float timeIn, float timeUp )
   {
-    StartCoroutine( SlideIn() ) ;
+    SlideInTime = timeIn ;
+    SlideUpTime = timeUp ;
   }
 
-  private IEnumerator SlideIn()
+  [Server]
+  public void SetLingerTime( float value )
   {
-    PrevPosition = InitialPosition ;
-    transform.localPosition = PrevPosition ;
+    LingerTime = value ;
+  }
+
+  [Server]
+  public void SetText( string value )
+  {
+    syncText.Value = value ;
+  }
+
+  private void OnTextChange( string prev, string next, bool isServer )
+  {
+    textField.text = next ;
+  }
+
+
+  [Server]
+  public void SlideAndLinger( int value )
+  {
+    StartCoroutine( SlideIn( value ) ) ;
+  }
+
+  [Server]
+  private IEnumerator SlideIn( int value )
+  {
+    PrevPosition        = InitialPosition ;
+    rt.localPosition    = PrevPosition ;
     Vector3 endPosition = NextPosition ;
     
-    if( PrevSibling.Lingering )
+    if( value > 0 )
     {
-      endPosition             += new Vector3( 0.0f, -120 , 0.0f );
-      transform.localPosition += new Vector3( 0.0f, -120 , 0.0f );
+      endPosition      += new Vector3( 0.0f, -height * value, 0.0f );
+      rt.localPosition += new Vector3( 0.0f, -height * value, 0.0f );
     }
-    Lingering = true ;
+
 
     int totalFrames = (int) (SlideInTime / Time.fixedDeltaTime) ;
-    Vector3 prev = transform.localPosition ;
-    Vector3 increment = ( endPosition - transform.localPosition ) / totalFrames ;
+    Vector3 prev = rt.localPosition ;
+    Vector3 increment = ( endPosition - rt.localPosition ) / totalFrames ;
     Vector3 intermediary ;
     Vector3 next ;
+
+    //Debug.Log( $"Moving message from InitialPosition {InitialPosition} to endPosition {endPosition} over {totalFrames} frames." ) ;
 
     for( int i = 0; i < totalFrames ; i++ )
     {
@@ -52,30 +86,26 @@ public class LogField : NetworkBehaviour
       next = intermediary + increment ;
       prev = next ;
       yield return new WaitForEndOfFrame() ;
-      transform.localPosition = next ;
+      rt.localPosition = next ;
     }
-    
-    if( PrevSibling.IsOnScreen )
-      yield return new WaitUntil( () => !PrevSibling.Lingering ) ;
 
-    PrevPosition = endPosition ;
-    NextPosition = PrevSibling.PrevPosition ;
-    
-    yield return StartCoroutine( SlideUp() ) ;
-
-    if( IsOnScreen )
+    while( IsOnScreen )
+    {
+      NextPosition = rt.localPosition + new Vector3( 0.0f, height, 0.0f ) ;
+      yield return new WaitForSeconds( LingerTime ) ;
       yield return StartCoroutine( SlideUp() ) ;
+    }
   }
 
 
-
+  [Server]
   private IEnumerator SlideUp()
   {
     Vector3 endPosition = NextPosition ;
 
     int totalFrames = (int) (SlideUpTime / Time.fixedDeltaTime) ;
-    Vector3 prev = transform.localPosition ;
-    Vector3 increment = ( endPosition - transform.localPosition ) / totalFrames ;
+    Vector3 prev = rt.localPosition ;
+    Vector3 increment = ( endPosition - rt.localPosition ) / totalFrames ;
     Vector3 intermediary ;
     Vector3 next ;
 
@@ -85,11 +115,28 @@ public class LogField : NetworkBehaviour
       next = intermediary + increment ;
       prev = next ;
       yield return new WaitForEndOfFrame() ;
-      transform.localPosition = next ;
+      rt.localPosition = next ;
     }
   }
 
-  private void Awake() { }
+  private void Start()
+  {
+    syncText.OnChange += OnTextChange ;
+
+    textField = GetComponentInChildren<TextMeshProUGUI>() ;
+
+    if( !IsServerInitialized )
+      return ;
+
+    rt = GetComponent<RectTransform>() ;
+
+    width  = Mathf.Abs( rt.sizeDelta.x ) ;
+    height = Mathf.Abs( rt.sizeDelta.y ) ;
+
+    InitialPosition = rt.localPosition ;
+    PrevPosition    = InitialPosition ;
+    NextPosition    = PrevPosition + new Vector3( width, 0.0f, 0.0f ) ;
+  }
 
   private void Update() { }
 }

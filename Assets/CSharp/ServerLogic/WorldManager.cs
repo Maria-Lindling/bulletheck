@@ -102,11 +102,12 @@ public class WorldManager : NetworkBehaviour, IEntityController
     {
       _connectedPlayers.Add( clientShell ) ;
       clientShell.AssignSeat( (PlayerSelect) _connectedPlayers.Count ) ;
+      GameEventSystem.NewCarousselMessage.Invoke( $"Player \"{clientShell.Seat}\" joined." ) ;
       SetLocalPlayer(clientShell.Owner,clientShell.Seat) ;
       ctx.Source.GetComponent<NetworkObject>().SetParent( clientLogicObject.GetComponent<NetworkObject>() ) ;
-    }
 
-    CheckScenarioBegin() ;
+      CheckScenarioBegin() ;
+    }
   }
   [TargetRpc]
   private void SetLocalPlayer(NetworkConnection conn, PlayerSelect playerSelect)
@@ -144,7 +145,7 @@ public class WorldManager : NetworkBehaviour, IEntityController
     if( ctx.TryReadValue<bool>(out bool value) && value == true )
     {
       GameEventContextBuilder gCtxB = new( gameObject ) ;
-      gCtxB.AddValue<string>( "Bad luck!\n\nTry Again?" ) ;
+      gCtxB.AddValue<string>( "Bad luck!\n\nRestart game to play again!" ) ;
       GameEventSystem.SetMessage.Invoke( gCtxB.Build() ) ;
       GameEventSystem.ShowMessage.Invoke( new(gameObject) ) ;
     }
@@ -187,10 +188,10 @@ public class WorldManager : NetworkBehaviour, IEntityController
   public void OnPauseMenu(GameEventContext ctx)
   {
     // DEBUG: cheat victory
-    if( gameState.Value == GameState.Playing )
-    {
-      GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(1).Build() ) ;
-    }
+    //if( gameState.Value == GameState.Playing )
+    //{
+    //  GameEventSystem.EncounterEnd.Invoke( new GameEventContextBuilder( gameObject ).AddValue<int>(1).Build() ) ;
+    //}
 
     switch( gameState.Value )
     {
@@ -236,6 +237,14 @@ public class WorldManager : NetworkBehaviour, IEntityController
     {
       syncPlayerScore.Value += value ;
     }
+  }
+
+  public void OnPlayerDefeated( GameEventContext ctx )
+  {
+    if( gameState.Value != GameState.Playing )
+      return ;
+
+    gameState.Value = GameState.Finished ;
   }
 #endregion
 
