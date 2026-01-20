@@ -36,7 +36,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
 #region Update
   private void UpdatePosition()
   {
-    transform.position = new Vector3( transform.position.x, transform.position.y - velocity * Time.deltaTime, 0 ) ;
+    transform.position = new Vector3( transform.position.x, transform.position.y - velocity * (float)TimeManager.TickDelta, 0 ) ;
   }
 
   private void UpdateAutoAttack()

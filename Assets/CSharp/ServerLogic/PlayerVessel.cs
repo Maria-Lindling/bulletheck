@@ -154,7 +154,7 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
     if( !isServer )
       return ;
 
-    _currentMovement = stats.MoveSpeed * Time.deltaTime * next ;
+    _currentMovement = stats.MoveSpeed * (float)TimeManager.TickDelta * next ;
   }
 
   private void OnLookChanged(Vector3 prev, Vector3 next, bool isServer)
