@@ -30,7 +30,6 @@ placeholder
 - `ClientShell`
   - `syncPlayerSeat` to distinguish if this client is Pilot or Gunner
   - `syncPlayerVessel` to allow the server to assign a vessel to the player/s
-  - `syncIsReady` to sync the ready-state of the client (⬇️low relevance / not used)
 - `GameFinishMenuOverlay`
   - `syncHostName` to sync input information, but "live update" for the InputField representing the other player isn't implemented (⬇️low relevance)
   - `syncClientName` to sync input information, but "live update" for the InputField representing the other player isn't implemented (⬇️low relevance)
@@ -49,15 +48,12 @@ placeholder
   - `syncVisibility` the visibility of the wait message
 - `PlayerVessel`
   - `syncHitPoints` the player vessel's hitpoints
-  - `isReady` flag for both players being ready (⬇️low relevance / not used)
   - `syncMove` current movement derived from player input
   - `syncLook` current mouse look derived from player input
   - `syncAtk1` active/inactive status of primary attack
   - `syncAtk2` active/inactive status of secondary attack
   - `syncAtk3` active/inactive status of turret attack
 - `WorldManager`
-  - `player1Name` (⬇️low relevance / not used)
-  - `player2Name` (⬇️low relevance / not used)
   - `syncPlayerScore` the server authoritative tracking of the players' score
   - `gameState` the current state of the game (playing/paused/finished/etc)
 ### Bullet-logic
