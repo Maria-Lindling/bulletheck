@@ -1,6 +1,7 @@
 using UnityEngine;
 using FishNet.Object;
 using System.Collections;
+using FishNet;
 
 public class BulletSpawner : NetworkBehaviour
 {
@@ -32,25 +33,25 @@ public class BulletSpawner : NetworkBehaviour
   {
     yield return new WaitForSeconds(delay) ;
 
-    GameObject bulletInstance = Instantiate( prefab, origin, Quaternion.LookRotation(heading,Vector3.up) ) ;
+    NetworkObject bulletInstance = NetworkManager.GetPooledInstantiated( prefab, bulletQuarantineObject.transform, true ) ;
+
+    bulletInstance.transform.SetPositionAndRotation( origin, Quaternion.LookRotation(heading,Vector3.up) );
 
     bulletInstance.GetComponent<BulletController>().Initialize( source, speed ) ;
-
-    bulletInstance.GetComponent<NetworkObject>().SetParent( bulletQuarantineObject.GetComponent<NetworkObject>() ) ;
     
-    Spawn(bulletInstance) ;
+    InstanceFinder.ServerManager.Spawn(bulletInstance) ;
 
     StartCoroutine( DespawnBullet( bulletInstance, despawnTime ) ) ;
   }
 
-  private IEnumerator DespawnBullet(GameObject bulletInstance, float delay)
+  private IEnumerator DespawnBullet(NetworkObject bulletInstance, float delay)
   {
     yield return new WaitForSeconds(delay) ;
 
-    if( bulletInstance == null )
+    if( !bulletInstance.enabled )
       yield break ;
 
-    Despawn( bulletInstance ) ;
+    Despawn( bulletInstance, DespawnType.Pool ) ;
   }
 
   private void Start()

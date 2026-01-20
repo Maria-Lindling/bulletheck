@@ -1,6 +1,7 @@
 using UnityEngine;
 using FishNet.Object;
 using System.Collections;
+using FishNet;
 
 public class EnemySpawner : NetworkBehaviour
 {
@@ -17,23 +18,23 @@ public class EnemySpawner : NetworkBehaviour
   {
     yield return null ;
 
-    GameObject enemyInstance = Instantiate( prefab, origin, new Quaternion() ) ;
+    NetworkObject enemyInstance = NetworkManager.GetPooledInstantiated( prefab, gameEntitiesObject.transform, true ) ;
 
-    enemyInstance.GetComponent<NetworkObject>().SetParent( gameEntitiesObject.GetComponent<NetworkObject>() ) ;
+    enemyInstance.transform.position = origin ;
     
-    Spawn(enemyInstance) ;
+    InstanceFinder.ServerManager.Spawn(enemyInstance) ;
 
     StartCoroutine( DespawnEnemy( enemyInstance, despawnTime ) ) ;
   }
 
-  private IEnumerator DespawnEnemy(GameObject enemyInstance, float delay)
+  private IEnumerator DespawnEnemy(NetworkObject enemyInstance, float delay)
   {
     yield return new WaitForSeconds(delay) ;
 
-    if( enemyInstance == null )
+    if( !enemyInstance.enabled )
       yield break ;
 
-    Despawn( enemyInstance ) ;
+    Despawn( enemyInstance, DespawnType.Pool ) ;
   }
 
   private void Start()

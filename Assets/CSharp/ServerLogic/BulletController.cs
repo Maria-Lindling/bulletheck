@@ -31,6 +31,8 @@ public class BulletController : NetworkBehaviour, IEntityController
 
   private void OnTriggerEnter(Collider other)
   {
+    if( !IsServerInitialized )
+      return ;
     if( other.gameObject.CompareTag( "Hitbox" ) )
     {
       if(
@@ -68,8 +70,7 @@ public class BulletController : NetworkBehaviour, IEntityController
       transform.localScale = Vector3.one * (1.20f - i * 0.05f) ;
     }
 
-    Despawn( DespawnType.Destroy ) ;
-    Destroy( gameObject ) ;
+    Despawn( DespawnType.Pool ) ;
   }
 
 #endregion
@@ -103,7 +104,7 @@ public class BulletController : NetworkBehaviour, IEntityController
     //GetComponentInChildren<MeshRenderer>().material.color = OwnNetworkGameManager.BallColor ;
     if( !IsServerInitialized )
     {
-      Destroy( this ) ;
+      //Destroy( this ) ;
       return ;
     }
 
@@ -116,6 +117,8 @@ public class BulletController : NetworkBehaviour, IEntityController
 
   private void FixedUpdate()
   {
+    if( !IsServerInitialized )
+      return ;
     lastVelocity = rb.linearVelocity ;
     rb.linearVelocity = goalVelocity.normalized * Speed ;
   }

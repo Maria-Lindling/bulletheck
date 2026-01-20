@@ -89,8 +89,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
       transform.localScale = Vector3.one * (1.20f - i * 0.05f) ;
     }
 
-    Despawn( DespawnType.Destroy ) ;
-    Destroy( gameObject ) ;
+    Despawn( DespawnType.Pool ) ;
   }
 #endregion
 
@@ -130,7 +129,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
   {
     if( !IsServerInitialized )
     {
-      Destroy( this ) ;
+      //Destroy( this ) ;
       return ;
     }
 

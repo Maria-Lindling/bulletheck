@@ -19,7 +19,6 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
 
 #region SyncVar
   private readonly SyncVar<float> syncHtPoints = new() ;
-  private readonly SyncVar<bool> isReady = new() ;
 
   public readonly SyncVar<Vector3> syncMove = new() ;
   public readonly SyncVar<Vector3> syncLook = new() ;
@@ -40,7 +39,6 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
 
 
 #region Properties
-  public bool IsReady => isReady.Value ;
   public PlayerSelect Identity { get ; private set ; }
   public ForceSelection Force => force ;
 #endregion
@@ -172,13 +170,6 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
     ) ;
   }
 
-  private void OnIsReadyChanged(bool prev, bool next, bool isServer)
-  {
-    if( !isServer )
-      return ;
-    
-  }
-
   private void OnAtk1Changed(bool prev, bool next, bool isServer)
   {
     if( !isServer )
@@ -254,7 +245,6 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
   {
     syncHtPoints.OnChange -= OnHitPointsChanged ;
     syncMove.OnChange     -= OnMoveChanged ;
-    isReady.OnChange      -= OnIsReadyChanged ;
     syncLook.OnChange     -= OnLookChanged ;
     syncAtk1.OnChange     -= OnAtk1Changed ;
     syncAtk2.OnChange     -= OnAtk2Changed ;
@@ -273,7 +263,6 @@ public class PlayerVessel : NetworkBehaviour, IEntityController
   {
     syncHtPoints.OnChange += OnHitPointsChanged ;
     syncMove.OnChange     += OnMoveChanged ;
-    isReady.OnChange      += OnIsReadyChanged ;
     syncLook.OnChange     += OnLookChanged ;
     syncAtk1.OnChange     += OnAtk1Changed ;
     syncAtk2.OnChange     += OnAtk2Changed ;

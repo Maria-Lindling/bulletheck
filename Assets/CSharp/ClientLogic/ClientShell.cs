@@ -12,7 +12,6 @@ public class ClientShell : NetworkBehaviour
 #region SyncVar
   private readonly SyncVar<PlayerSelect> syncPlayerSeat = new() ;
   private readonly SyncVar<PlayerVessel> syncPlayerVessel = new() ;
-  private readonly SyncVar<bool> syncIsReady = new() ;
 #endregion
 
 
@@ -224,11 +223,6 @@ public class ClientShell : NetworkBehaviour
   {
     
   }
-
-  private void OnReadyChange(bool prev, bool next, bool isServer )
-  {
-    
-  }
 #endregion
 
 
@@ -237,7 +231,6 @@ public class ClientShell : NetworkBehaviour
   {
     syncPlayerSeat.OnChange   += OnSeatChange ;
     syncPlayerVessel.OnChange += OnVesselChange ;
-    syncIsReady.OnChange      += OnReadyChange ;
 
     _playerInput = GetComponent<PlayerInput>() ;
     _playerInput.enabled = false ;

@@ -6,9 +6,6 @@ using System;
 using System.Collections;
 using FishNet.Connection;
 
-// misc
-// TODO: add "retry level" button
-// TODO: alternate leaderboard view with "your score" for comparison
 [RequireComponent(typeof(GameDatabaseClient))]
 public class WorldManager : NetworkBehaviour, IEntityController
 {
@@ -29,16 +26,6 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
   [Header("Menus")]
   [SerializeField] private GameObject gameFinishMenuPrefab ;
-
-  //[Header("UI")]
-  // [SerializeField] private GameObject sceneBackdrop ;
-  // [SerializeField] private TMP_Text player1NameText ;
-  // [SerializeField] private TMP_Text player2NameText ;
-  // [SerializeField] private TMP_InputField playerNameField ;
-  // [SerializeField] private Button readyButton ;
-
-  public readonly SyncVar<string> player1Name = new() ;
-  public readonly SyncVar<string> player2Name = new() ;
 
   [Header("Score")]
   private readonly SyncVar<int> syncPlayerScore = new() ;
@@ -367,7 +354,7 @@ public class WorldManager : NetworkBehaviour, IEntityController
 
     sceneBackdrop.transform.position = new Vector3(
       sceneBackdrop.transform.position.x,
-      sceneBackdrop.transform.position.y - verticalScrollSpeed * Time.deltaTime
+      sceneBackdrop.transform.position.y - verticalScrollSpeed * (float)TimeManager.TickDelta
     ) ;
   }
 #endregion
