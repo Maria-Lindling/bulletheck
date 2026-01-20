@@ -3,6 +3,10 @@
 - Import SQL database found at `Assets\CSharp\DatabaseClient\phpSQLdb\bulletheck.sql` into xampp phpMyAdmin
 - Copy files found at `Assets\CSharp\DatabaseClient\phpApi\*` to `C:\xampp\htdocs\bulletheck_api\*`
 - Start the game using the Unity Editor on the machine running xampp
+- Select the option to Host game.
+- Start a second instance of the game.
+- Select the option to Join game.
+- Have fun.
 
 ## Project Checklist
 ### 1. Multiplayer
