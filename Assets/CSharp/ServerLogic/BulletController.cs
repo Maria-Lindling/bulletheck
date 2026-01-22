@@ -9,7 +9,6 @@ public class BulletController : NetworkBehaviour, IEntityController
 
   private Rigidbody rb ;
   private GameObject _source ;
-  private Vector3 lastVelocity ;
   private Vector3 goalVelocity ;
   private ForceSelection _force ;
 
@@ -55,6 +54,7 @@ public class BulletController : NetworkBehaviour, IEntityController
   private IEnumerator ShrinkAndDespawn()
   {
     rb.detectCollisions = false ;
+    TimeManager.OnTick -= OnTick ;
 
     WaitForEndOfFrame wait = new() ;
 
@@ -79,47 +79,54 @@ public class BulletController : NetworkBehaviour, IEntityController
 #region Init
   public void Initialize(GameObject source, float speed)
   {
+    if( !IsServerInitialized )
+      return ;
+
     _source = source ;
     Speed = speed ;
-    
+
     if( _source == null )
     {
       _force = ForceSelection.None ;
       return ;
     }
     _force = _source.GetComponent<IEntityController>().Force ;
+
+    goalVelocity = transform.forward ;
+
+    RealignSprite() ;
+
+    TimeManager.OnTick += OnTick ;
   }
 
   [ObserversRpc]
   private void RealignSprite()
   {
     sprite.transform.LookAt( sprite.transform.position + Camera.main.transform.forward ) ;
-  } 
-#endregion 
-
-
-#region MonoBehavior
-  private void Start()
-  {
-    //GetComponentInChildren<MeshRenderer>().material.color = OwnNetworkGameManager.BallColor ;
-    if( !IsServerInitialized )
-    {
-      //Destroy( this ) ;
-      return ;
-    }
-
-    rb = GetComponentInChildren<Rigidbody>() ;
-
-    goalVelocity = transform.forward ;
-
-    RealignSprite() ;
   }
 
-  private void FixedUpdate()
+  public void ResetRigidBody()
+  {
+    if( rb == null )
+      return ;
+    
+    rb.linearVelocity = Vector3.zero ;
+    rb.angularVelocity = Vector3.zero ;
+  }
+  #endregion
+
+
+  #region MonoBehavior
+  private void Start()
   {
     if( !IsServerInitialized )
       return ;
-    lastVelocity = rb.linearVelocity ;
+
+    rb = GetComponentInChildren<Rigidbody>() ;
+  }
+
+  private void OnTick()
+  {
     rb.linearVelocity = goalVelocity.normalized * Speed ;
   }
 #endregion

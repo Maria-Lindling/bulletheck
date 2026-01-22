@@ -22,7 +22,9 @@ public class EnemySpawner : NetworkBehaviour
 
     enemyInstance.transform.position = origin ;
     
-    InstanceFinder.ServerManager.Spawn(enemyInstance) ;
+    Spawn(enemyInstance) ;
+
+    enemyInstance.GetComponent<EnemyController>().ReInitialize() ;
 
     StartCoroutine( DespawnEnemy( enemyInstance, despawnTime ) ) ;
   }

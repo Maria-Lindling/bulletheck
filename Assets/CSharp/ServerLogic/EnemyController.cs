@@ -112,6 +112,11 @@ public class EnemyController : NetworkBehaviour, IEntityController
       TimeManager.OnTick += OnTick ;
     }
   }
+
+  public void ReInitialize()
+  {
+    StartCoroutine( DelayedIsOwner() ) ;
+  }
 #endregion
 
 
@@ -128,10 +133,7 @@ public class EnemyController : NetworkBehaviour, IEntityController
   private void Start()
   {
     if( !IsServerInitialized )
-    {
-      //Destroy( this ) ;
       return ;
-    }
 
     StartCoroutine( DelayedIsOwner() ) ;
   }

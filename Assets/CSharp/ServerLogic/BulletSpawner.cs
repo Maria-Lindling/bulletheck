@@ -33,13 +33,15 @@ public class BulletSpawner : NetworkBehaviour
   {
     yield return new WaitForSeconds(delay) ;
 
-    NetworkObject bulletInstance = NetworkManager.GetPooledInstantiated( prefab, bulletQuarantineObject.transform, true ) ;
+    NetworkObject bulletInstance = NetworkManager.GetPooledInstantiated( prefab, null, true ) ;
+
+    bulletInstance.GetComponent<BulletController>().ResetRigidBody() ;
+
+    bulletInstance.GetComponent<BulletController>().Initialize( source, speed ) ;
 
     bulletInstance.transform.SetPositionAndRotation( origin, Quaternion.LookRotation(heading,Vector3.up) );
 
-    bulletInstance.GetComponent<BulletController>().Initialize( source, speed ) ;
-    
-    InstanceFinder.ServerManager.Spawn(bulletInstance) ;
+    Spawn(bulletInstance) ;
 
     StartCoroutine( DespawnBullet( bulletInstance, despawnTime ) ) ;
   }
